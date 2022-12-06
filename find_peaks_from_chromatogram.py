@@ -1,7 +1,7 @@
 # from pathlib import Path
 import os
 import matplotlib.pyplot as plt
-from ChromProcess.Loading import conditions_from_csv, chrom_from_csv, chrom_from_cdf
+from ChromProcess.Loading import conditions_from_csv, chrom_from_csv
 from ChromProcess.Loading.analysis_info.analysis_from_toml import analysis_from_toml
 from ChromProcess.Utils.signal_processing.deconvolution import deconvolute_peak
 from pathlib import Path
@@ -16,8 +16,8 @@ from ChromProcess.Processing import internal_standard_integral_look_ahead
 import numpy as np
 from ChromProcess import Classes
 
-experiment_number = "FRN154"
-experiment_folder = Path(f"{Path.home()}/Downloads/Macdocs/Master/Internship/Data/{experiment_number}")
+experiment_number = "FRN151"
+experiment_folder = Path(f"{Path.home()}/PhD/Data/{experiment_number}")
 chromatogram_directory = Path(experiment_folder, f"ChromatogramCSV")
 conditions_file = Path(experiment_folder, f"{experiment_number}_conditions.csv")
 analysis_file = Path(experiment_folder, f"{experiment_number}_analysis_details.toml")
@@ -25,6 +25,8 @@ peak_collection_directory = Path(experiment_folder, f"PeakCollections")
 
 conditions = conditions_from_csv(conditions_file)
 analysis = analysis_from_toml(analysis_file)
+
+plot_figures = True
 
 os.makedirs(peak_collection_directory, exist_ok=True)
 chromatogram_files = os.listdir(chromatogram_directory)
@@ -106,12 +108,13 @@ for chrom in chroms:
             peaks.append(
                 Classes.Peak(retention_time, start, end, indices=[], height=height)
             )
-        peak_area(
-            time,
-            signal,
-            picked_peaks,
-            save_folder=f"{peak_figure_folder}/{reg[0]}_{chrom.filename[:-4]}.png",
-        )
+        if plot_figures = True:
+            peak_area(
+                time,
+                signal,
+                picked_peaks,
+                save_folder=f"{peak_figure_folder}/{reg[0]}_{chrom.filename[:-4]}.png",
+            )
         add_peaks_to_chromatogram(peaks, chrom)
     integrate_chromatogram_peaks(chrom, baseline_subtract=True)
 
@@ -124,23 +127,20 @@ for reg in analysis.deconvolve_regions:
         analysis.deconvolve_regions[reg]["region_boundaries"][0],
         analysis.deconvolve_regions[reg]["region_boundaries"][1],
     )
-    peak_folder = f"{experiment_folder}\\deconvolved_peaks\\{region_start}"
+    peak_folder = f"{experiment_folder}/deconvolved_peaks/{region_start}"
     os.makedirs(peak_folder, exist_ok=True)
     fit_values = np.array(["mse"])
     for n in range(1, analysis.deconvolve_regions[reg]["number_of_peaks"] + 1):
         fit_values = np.hstack((fit_values, [f"amp{n}", f"centre{n}", f"sigma{n}"]))
     fit_values = np.hstack((fit_values, "baseline"))
     for chrom in chroms:
-        try:  # the fit can often crash because of boundaries that do not match, this is costly as it means all the code has to be run again and we don't convolute all regions, try except here makes this easier.
-            popt, pcov, mse, peaks = deconvolute_peak(
-                chrom,
-                peak_folder,
-                indices,
-                analysis.deconvolve_regions[reg],
-                plotting=True,
-            )
-        except:
-            print(f"error in fitting {reg}")
+        popt, pcov, mse, peaks = deconvolute_peak(
+            chrom,
+            peak_folder,
+            indices,
+            analysis.deconvolve_regions[reg],
+            plotting=True,
+        )
         fit_values = np.vstack((fit_values, np.array([mse, *popt])))
         k = [*chrom.peaks.keys()]
         v = [*chrom.peaks.values()]
@@ -153,7 +153,9 @@ for reg in analysis.deconvolve_regions:
             v.insert(insert, peak)
         chrom.peaks = dict(zip(k, v))
 
-    pd.DataFrame(fit_values).to_csv(f"{peak_folder}\\gaussian_fit_{region_start}.csv")
+    pd.DataFrame(fit_values).to_csv(
+        f"{peak_folder}\\gaussian_fit_{region_start}.csv"
+    )
 # for chrom in chroms:
 #    peaks_indices = peak_indices_from_file(chrom,f"{peak_collection_directory}\\{chrom.filename}")
 #    peak_starts, peak_ends = peak_boundaries_from_file(chrom,f"{peak_collection_directory}\\{chrom.filename}")

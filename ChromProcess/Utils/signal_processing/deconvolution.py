@@ -615,9 +615,9 @@ def deconvolute_peak(
                 boundaries[1].append(info_dict["standard_sigma"][2])
                 initial_guess.append(info_dict["standard_sigma"][1])
             #add values for the automatic baseline adaptation
-            initial_guess.append(0)
-            boundaries[0].append(0)
-            boundaries[1].append(min(signal)+0.001)
+        initial_guess.append(0)
+        boundaries[0].append(0)
+        boundaries[1].append(min(signal)+0.001)
 
     else: #this code was used for the old file system
         if "lower_fit_boundaries" in info_dict:
