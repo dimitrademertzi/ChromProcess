@@ -16,8 +16,8 @@ from ChromProcess.Processing import internal_standard_integral_look_ahead
 import numpy as np
 from ChromProcess import Classes
 
-experiment_number = "FRN151"
-experiment_folder = Path(f"{Path.home()}/PhD/Data/{experiment_number}")
+experiment_number = "FRN154"
+experiment_folder = Path(f"{Path.home()}/Downloads/Macdocs/Master/Internship/Data/{experiment_number}")
 chromatogram_directory = Path(experiment_folder, f"ChromatogramCSV")
 conditions_file = Path(experiment_folder, f"{experiment_number}_conditions.csv")
 analysis_file = Path(experiment_folder, f"{experiment_number}_analysis_details.toml")
@@ -29,6 +29,7 @@ analysis = analysis_from_toml(analysis_file)
 os.makedirs(peak_collection_directory, exist_ok=True)
 chromatogram_files = os.listdir(chromatogram_directory)
 chromatogram_files.sort()
+chromatogram_files.remove('.DS_Store')
 chroms = []
 for f in chromatogram_files:
     chroms.append(chrom_from_csv(f"{chromatogram_directory}/{f}"))
@@ -40,12 +41,14 @@ for f in chromatogram_files:
 #    chrom.signal -= blank.signal
 
 
-# fig, ax = plt.subplots()
-# for c in chroms:
+#fig, ax = plt.subplots()
+#for c in chroms:
 #     ax.plot(c.time[analysis.plot_region[0]:analysis.plot_region[1]],
-#             c.signal[analysis.plot_region[0]:analysis.plot_region[1]],
-#             label = c.filename)
-# plt.show()
+#            c.signal[analysis.plot_region[0]:analysis.plot_region[1]],
+#            label = c.filename)
+#plt.show()
+#plt.close()
+
 is_start = analysis.internal_standard_region[0]
 is_end = analysis.internal_standard_region[1]
 for c in chroms:
@@ -65,6 +68,7 @@ for c in chroms:
         label=c.filename,
     )
 plt.show()
+plt.close()
 
 threshold = analysis.peak_pick_threshold
 if type(threshold) == float:
