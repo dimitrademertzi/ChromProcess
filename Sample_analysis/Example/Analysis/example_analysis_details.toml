@@ -1,11 +1,12 @@
 # A code name for the data.
-Dataset = "example_dataset_name"
+Dataset = "FRN151"
+Plot_region = [5500,66000]
 
 [Method_information]
 # Information on the chromatographic method used.
-Method = "GCMS"
-Instrument = "GCv Agilent/JEOL"
-Instrument_method = "Method 5"
+Method = "GC"
+Instrument = "GC"
+Instrument_method = "Optimize_7"
 Calibration_model = "quadratic"
 Calibration_file = "2020_03_16_GCMS_Calibrations.csv"
 Derivatisation_method = '''
@@ -23,17 +24,30 @@ sample vials for analysis by GC-MS.
 
 [Peak_picking_options]
 # Peaks above this fraction of a the local maximum of a region will be found.
-Peak_pick_threshold = 0.1
+Peak_pick_threshold = 0.001
+Prominence = 0.002
+Peak_distance = 60
+Boundary_window = 35
+smooth_window = 41 
 
 [Chromatogram_Regions]
-# These vairable names are currently arbitrary and are not read by the software.
-region_1 = [7.4, 8.4]
-region_2 = [10.2, 11.2]
-region_3 = [12.8, 14.0]
+# These variable names are currently arbitrary and are not read by the software.
+region_0 = [3.45, 3.9]
+region_1 = [10.454,10.553]
+region_2 = [11.151,11.278]
+region_3 = [11.461,11.52]
+region_4 = [11.515,11.62]
+region_8 = [11.61,12.15]
+region_9 = [14.4, 15.13] 
+# region_10 = [13.90, 14.46]
+region_11 = [16.6,18.1] 
+# region_14 = [8.28,8.33]
+# region_15 = [8.32,8.425]
+# region_16 = [8.4, 8.75]
 
 [Internal_standard_region]
 # the variable name `internal_standard_1` should remain unchanged for now.
-internal_standard_1 = [6.6, 6.79]
+internal_standard_1 = [9.2, 9.45]
 
 [Mass_spectra_options]
 # Options for loading and using mass spectral data.
@@ -43,10 +57,84 @@ Mass_spectra_filter = 500
 [Sample_information]
 Dilution_factor = 5.714285714
 Dilution_factor_error = 0.0447
+Internal_standard_concentration_error = 9.89e-6
 Internal_standard_concentration = 0.0008
-Internal_standard_concentration_error = 9.89E-06
+
 
 [Deconvolution_regions]
 # Experimental: extra field can artbitrarily be added to the .toml file for
 # extra parameter definitions.
-region_1 = [6.6, 6.79]
+standard_amplitude = [0,1,1e7]
+standard_sigma = [0.0005,0.001,0.02]
+[Deconvolution_regions.region_1]
+region_boundaries = 6
+number_of_peaks = [8.27, 8.65]
+peaks.1.centre = [8.30,8.31,8.322]
+peaks.1.amplitude = [0,1,1e7]
+peaks.1.sigma = [0.0005,0.001,0.02]
+#region_1.region_boundaries = [8.27, 8.65]
+#region_1.number_of_peaks = 6
+#region_1.lower_fit_boundaries = [0,8.30,0.0005,0,8.334,0.0005,0,8.37,0.0005,0,8.4512,0.0005,0,8.53,0.0005,0,8.55,0.00555]
+#region_1.upper_fit_boundaries = [1e7,8.322,0.02,1e7,8.36,0.015,1e7,8.395,0.02,1e7,8.488,0.02,1e7,8.585,0.02,1e7,8.65,0.02]
+#region_1.initial_guess = [1,8.31,0.001,1,8.35,0.00869,1,8.385,0.01,1,8.47,0.01,1,8.53,0.01,1,8.566,0.01]
+#
+# region_2.region_boundaries = [8.55, 8.96]
+# region_2.number_of_peaks = 2
+# region_2.lower_fit_boundaries = [0,8.79,0.0005,0,8.875,0.0005]
+# region_2.upper_fit_boundaries = [1e7,8.875,0.017,1e7,8.925,0.025]
+# region_2.initial_guess = [1,8.86,0.001,1,8.91,0.00869]
+#
+# # region_3.region_boundaries = [8.25, 8.96] 
+# # region_3.number_of_peaks = 10
+# # region_3.lower_fit_boundaries = [0,8.30,0.0005,0,8.334,0.0005,0,8.38,0.0005,0,8.4612,0.0005,0,8.53,0.0005,0,8.55,0.00055,0,8.65,0.0005,0,8.72,0.0005,0,8.79,0.0005,0,8.875,0.0005]
+# # region_3.upper_fit_boundaries = [1e7,8.34,0.02,1e7,8.38,0.015,1e7,8.42,0.02,1e7,8.488,0.02,1e7,8.585,0.0135,1e7,8.65,0.0135,1e7,8.72,0.02,1e7,8.78,0.02,1e7,8.875,0.017,1e7,8.925,0.025]
+# # region_3.initial_guess = [1,8.33,0.001,1,8.36,0.00869,1,8.40,0.01,1,8.47,0.01,1,8.53,0.01,1,8.566,0.01,1,8.698,0.01,1,8.75,0.01,1,8.86,0.001,1,8.91,0.00869]
+#
+# # region_3.region_boundaries = [10.12, 10.31]
+# # region_3.number_of_peaks = 2
+# # region_3.lower_fit_boundaries = [0,10.17,0.0005,0,10.22,0.0005]
+# # region_3.upper_fit_boundaries = [1e7,10.20,0.02,1e7,10.255,0.025]
+# # region_3.initial_guess = [1,10.175,0.001,1,10.24,0.00869]
+#
+#region_5.region_boundaries = [10.318, 10.6]
+#region_5.number_of_peaks = 3
+#region_5.lower_fit_boundaries = [0,10.32,0.0005,0,10.41,0.0005,0,10.49,0.0005]#,0,10.55,0.0005]
+#region_5.upper_fit_boundaries = [1e7,10.379,0.015,1e7,10.44,0.02,1e7,10.5575,0.03]#,1e7,10.63,0.03]
+#region_5.initial_guess = [1,10.365,0.01,1,10.43,0.001,1,10.53,0.00869]#,1,10.556,0.00869]
+#
+#region_6.region_boundaries = [10.6440, 11.28]
+#region_6.number_of_peaks = 7
+#region_6.lower_fit_boundaries = [0,10.68,0.0005,0,10.72,0.0005,0,10.83,0.0005,0,10.85,0.0005,0,10.9,0.0005,0,11.08,0.0005,0,11.15,0.0005]
+#region_6.upper_fit_boundaries = [1e7,10.72,0.03,1e7,10.81,0.03,1e7,10.876,0.03,1e7,10.96,0.03,1e7,11.05,0.03,1e7,11.19,0.035,1e7,11.26,0.035]
+#region_6.initial_guess = [1,10.71,0.01,1,10.8,0.01,1,10.865,0.01,1,10.93,0.01,1,11.03,0.01,1,11.18,0.01,1,11.255,0.01]
+
+#region_7.region_boundaries = [12.9, 13.42]
+#region_7.number_of_peaks = 5
+#region_7.lower_fit_boundaries = [0,12.92,0.0005,0,13.0,0.0005,0,13.105,0.0005,0,13.29,0,0,13.33,0.0005]
+#region_7.upper_fit_boundaries = [1e7,13.01,0.028,1e7,13.15,0.04,1e7,13.28,0.04,1e7,13.33,0.026,1e7,13.41,0.04]
+#region_7.initial_guess = [1,12.965,0.01,1,13.128,0.001,1,13.23,0.00869,1,13.3,0.01,1,13.37,0.01]
+#
+#region_8.region_boundaries = [13.9, 14.49]
+#region_8.number_of_peaks = 4
+#region_8.lower_fit_boundaries = [0,13.95,0.0005,0,14.055,0.0005,0,14.22,0.0005,0,14.34,0.0005]
+#region_8.upper_fit_boundaries = [1e7,14,0.04,1e7,14.165,0.035,1e7,14.32,0.045,1e7,14.450,0.04]
+#region_8.initial_guess = [1,13.987,0.001,1,14.145,0.0086,1,14.30,0.001,1,14.38,0.00869]
+#
+# region_9.region_boundaries = [15.8, 16.1]
+# region_9.number_of_peaks = 2
+# region_9.lower_fit_boundaries = [0,15.81,0.0005,0,15.96,0.0005]
+# region_9.upper_fit_boundaries = [1e7,15.90,0.04,1e7,16.02,0.035]
+# region_9.initial_guess = [1,15.9,0.001,1,16,0.00869]
+#
+# region_10.region_boundaries = [16.98, 17.6] #Unable to deconvolve
+# region_10.number_of_peaks = 4
+# region_10.lower_fit_boundaries = [0,17,0.0005,0,17.165,0.0005,0,17.3,0.0005,0,17.49,0.0005]
+# region_10.upper_fit_boundaries = [1e7,17.12,0.04,1e7,17.230,0.035,1e7,17.37,0.055,1e7,17.558,0.035]
+# region_10.initial_guess = [1,17.07,0.001,1,17.2,0.00869,1,17.34,0.001,1,17.52,0.001]
+#
+# region_11.region_boundaries = [18.11, 18.33]
+# region_11.number_of_peaks = 2
+# region_11.lower_fit_boundaries = [0,18.13,0.0005,0,18.22,0.0005]
+# region_11.upper_fit_boundaries = [1e7,18.21,0.04,1e7,18.297,0.03]
+# region_11.initial_guess = [1,18.19,0.001,1,18.27,0.00869]
+#

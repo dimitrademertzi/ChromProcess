@@ -626,7 +626,7 @@ def deconvolute_peak(
         if "lower_fit_boundaries" in info_dict:
             boundaries = [
                 [*info_dict["lower_fit_boundaries"], 0],
-                [*info_dict["upper_fit_boundaries"], min(signal) + 0.001],
+                [*info_dict["upper_fit_boundaries"], min(signal) + 0.0001],
             ]
         else:
             lower_bounds = [0, time[0], 0]
