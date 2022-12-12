@@ -623,7 +623,7 @@ def deconvolute_peak(
         if "lower_fit_boundaries" in info_dict:
             boundaries = [
                 [*info_dict["lower_fit_boundaries"], 0],
-                [*info_dict["upper_fit_boundaries"], min(signal) + 0.001],
+                [*info_dict["upper_fit_boundaries"], min(signal) + 0.0001],
             ]
         else:
             lower_bounds = [0, time[0], 0]
@@ -689,7 +689,7 @@ def deconvolute_peak(
         ax.plot(time, final_curve + baseline)
         fig.set_size_inches(18.5, 10.5)
         plt.tight_layout()
-        plt.savefig(f"{peak_folder}\\{chromatogram.filename}.png")
+        plt.savefig(f"{peak_folder}/{chromatogram.filename}.png")
         plt.close()
     else:
         plt.close()
