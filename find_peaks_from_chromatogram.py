@@ -69,10 +69,10 @@ for c in chroms:
 
 
 threshold = analysis.peak_pick_threshold
-    threshold = [threshold for r in analysis.regions]
+threshold = [threshold for r in analysis.regions]
 peak_figure_folder = Path(experiment_folder, "peak_figures")
 if type(threshold) == float:
-peak_figure_folder.mkdir(exist_ok=True)
+    peak_figure_folder.mkdir(exist_ok=True)
 for chrom in chroms:
     for reg, thres in zip(analysis.regions, threshold):
         inds = indices_from_boundary(chrom.time, reg[0], reg[1])
