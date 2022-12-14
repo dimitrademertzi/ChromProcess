@@ -31,7 +31,7 @@ if not valid_deconvolution(analysis):
     exit()
 # Load in all chromatograms
 
-plot_figures = True
+plot_figures = False
 
 os.makedirs(peak_collection_directory, exist_ok=True)
 chromatogram_files = os.listdir(chromatogram_directory)
@@ -115,8 +115,6 @@ for chrom in chroms:
     integrate_chromatogram_peaks(chrom, baseline_subtract=True)
 
 
-
-
 ## heatmap_cluster(chroms)
 for reg in analysis.deconvolve_regions:
     region_start = analysis.deconvolve_regions[reg]["region_boundaries"][0]
@@ -175,7 +173,7 @@ for c in chroms:
 plt.show()
 plt.close()
 
-heatmap_cluster(chroms,analysis.plot_region, peak_agglomeration_boundary=0.02)
+#heatmap_cluster(chroms,analysis.plot_region, peak_agglomeration_boundary=0.02)
 for c, v in zip(chroms, conditions.series_values):
     c.write_peak_collection(
         filename=f"{peak_collection_directory}/{c.filename}",
