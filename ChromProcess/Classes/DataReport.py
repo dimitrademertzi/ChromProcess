@@ -133,3 +133,12 @@ class DataReport:
                 del_list.append(d)
 
         self.remove_specific_entries(del_list)
+    
+    def data_as_numpy(self):
+
+        data_array = np.zeros((len(self.series_values), len(self.data)))
+
+        for c,item in enumerate(self.data):
+            data_array[:,c] = self.data[item]
+        
+        return data_array

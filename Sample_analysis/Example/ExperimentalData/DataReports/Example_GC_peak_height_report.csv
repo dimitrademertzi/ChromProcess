@@ -1,0 +1,22 @@
+Dataset,Example
+start_conditions
+dihydroxyacetone/ M,2.0,
+formaldehyde/ M,2.0,
+NaOH/ M,0.12,
+CaCl2/ M,0.06,
+water/ M,0.0,
+end_conditions
+start_analysis_details
+Instrument,GC
+Chromatography_type,GC
+Chromatography_method,Optimize_7
+Derivatisation_method,Reaction samples (35 μL) were flash-frozen in liquid nitrogen and freeze-dried overnight to give dry to oily residues. To each sample was added a solution of O-ethylhydroxylamine hydrochloride in pyridine (75 μL; 20 g L^−1^). A solution of dodecane and tetradecane (100 μL; 1.6 mM each in pyridine) was then added to each sample. The samples were then shaken at 70 °C for 30 minutes. After cooling to room temperature; N;O-bis(trimethylsilyl)trifluoroacetamide (25 μL) was added to each sample. The samples were again shaken at 70 °C for 30 minutes. The samples were then cooled to room temperature; followed by centrifugation (3-5 min; 10;000 rpm). The supernatants were decanted into sample vials for analysis by GC-MS. 
+Calibrations_file,2020_03_16_GCMS_Calibrations.csv
+Calibration_model,quadratic
+end_analysis_details
+start_data
+time/ s, [7.939], [8.096], [8.28], [8.376], [10.675], [10.964], [11.131], [13.536], [13.856],
+10.0,0.0,2.054158935193672,0.5972046492568887,0.676118030614204,0.5434844224963568,1.4879521061356533,0.33601589037234664,2.2444977630154685,1.0236115216125765,
+20.0,0.3297380559120824,2.1043682626225637,0.6289675919347576,0.7316336265654413,0.5695231230562667,1.546392242934276,0.32161264402650225,2.357235097900973,2.2058377431932605,
+30.0,0.0,2.057293757135197,0.5530721566305913,0.6652962547552499,0.5396552075655229,1.4954528121528925,0.3333265714214297,2.393093172941612,2.094944199244786,
+end_data

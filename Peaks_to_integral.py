@@ -33,7 +33,7 @@ series.align_peaks_to_IS(IS_pos)
 #series.reference_integrals_to_IS()
  # 5% of internal standard integral if integrals are normalised to IS
 #series.remove_peaks_below_threshold(peak_removal_limit)
-peak_agglomeration_boundary = 0.02 # distance cutoff 
+peak_agglomeration_boundary = 0.01 # distance cutoff 
 # cluster_threshold = 0.008
 series.get_peak_clusters(bound = peak_agglomeration_boundary)
 to_remove = []
