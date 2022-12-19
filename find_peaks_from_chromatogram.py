@@ -68,51 +68,51 @@ for c in chroms:
     print(c.internal_standard.integral)
 
 
-threshold = analysis.peak_pick_threshold
-threshold = [threshold for r in analysis.regions]
-peak_figure_folder = Path(experiment_folder, "peak_figures")
-if type(threshold) == float:
-    peak_figure_folder.mkdir(exist_ok=True)
-for chrom in chroms:
-    for reg, thres in zip(analysis.regions, threshold):
-        inds = indices_from_boundary(chrom.time, reg[0], reg[1])
-        time = chrom.time[inds]
-        signal = chrom.signal[inds]
-        picked_peaks = find_peaks_scipy(
-            signal,
-            threshold=thres,
-            min_dist=analysis.peak_distance,
-            max_inten=1e100,
-            prominence=analysis.prominence,
-            wlen=1001,
-            look_ahead=analysis.boundary_window,
-            smooth_window=11,
-        )
-        peak_features = peak_indices_to_times(time, picked_peaks)
-        peaks = []
-        for x in range(0, len(picked_peaks["Peak_indices"])):
-            pk_idx = picked_peaks["Peak_indices"][x]
-            start_idx = picked_peaks["Peak_start_indices"][x]
-            end_idx = picked_peaks["Peak_end_indices"][x]
-
-            retention_time = time[pk_idx]
-            start = time[start_idx]
-            end = time[end_idx]
-            height = signal[pk_idx] - min(
-                signal
-            )  # subtract the baseline of the region from the peak height
-            peaks.append(
-                Classes.Peak(retention_time, start, end, indices=[], height=height)
-            )
-        if plot_figures == True:
-            peak_area(
-                time,
-                signal,
-                picked_peaks,
-                save_folder=f"{peak_figure_folder}/{reg[0]}_{chrom.filename[:-4]}.png",
-            )
-        add_peaks_to_chromatogram(peaks, chrom)
-    integrate_chromatogram_peaks(chrom, baseline_subtract=True)
+#threshold = analysis.peak_pick_threshold
+#threshold = [threshold for r in analysis.regions]
+#peak_figure_folder = Path(experiment_folder, "peak_figures")
+#if type(threshold) == float:
+#    peak_figure_folder.mkdir(exist_ok=True)
+#for chrom in chroms:
+#    for reg, thres in zip(analysis.regions, threshold):
+#        inds = indices_from_boundary(chrom.time, reg[0], reg[1])
+#        time = chrom.time[inds]
+#        signal = chrom.signal[inds]
+#        picked_peaks = find_peaks_scipy(
+#            signal,
+#            threshold=thres,
+#            min_dist=analysis.peak_distance,
+#            max_inten=1e100,
+#            prominence=analysis.prominence,
+#            wlen=1001,
+#            look_ahead=analysis.boundary_window,
+#            smooth_window=11,
+#        )
+#        peak_features = peak_indices_to_times(time, picked_peaks)
+#        peaks = []
+#        for x in range(0, len(picked_peaks["Peak_indices"])):
+#            pk_idx = picked_peaks["Peak_indices"][x]
+#            start_idx = picked_peaks["Peak_start_indices"][x]
+#            end_idx = picked_peaks["Peak_end_indices"][x]
+#
+#            retention_time = time[pk_idx]
+#            start = time[start_idx]
+#            end = time[end_idx]
+#            height = signal[pk_idx] - min(
+#                signal
+#            )  # subtract the baseline of the region from the peak height
+#            peaks.append(
+#                Classes.Peak(retention_time, start, end, indices=[], height=height)
+#            )
+#        if plot_figures == True:
+#            peak_area(
+#                time,
+#                signal,
+#                picked_peaks,
+#                save_folder=f"{peak_figure_folder}/{reg[0]}_{chrom.filename[:-4]}.png",
+#            )
+#        add_peaks_to_chromatogram(peaks, chrom)
+#    integrate_chromatogram_peaks(chrom, baseline_subtract=True)
 
 
 ## heatmap_cluster(chroms)
@@ -171,7 +171,6 @@ for c in chroms:
         label=c.filename,
     )
 plt.show()
-plt.close()
 
 #heatmap_cluster(chroms,analysis.plot_region, peak_agglomeration_boundary=0.02)
 for c, v in zip(chroms, conditions.series_values):
