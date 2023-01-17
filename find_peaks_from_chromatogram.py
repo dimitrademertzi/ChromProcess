@@ -1,6 +1,8 @@
 # from pathlib import Path
 import os
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
+import seaborn as sns
 from ChromProcess.Loading import conditions_from_csv, chrom_from_csv
 from ChromProcess.Loading.analysis_info.analysis_from_toml import analysis_from_toml
 from ChromProcess.Utils.signal_processing.deconvolution import deconvolute_peak
@@ -17,7 +19,7 @@ from ChromProcess.Processing import internal_standard_integral_look_ahead
 import numpy as np
 from ChromProcess import Classes
 
-experiment_number = "FRN154"
+experiment_number = "MIN001"
 experiment_folder = Path(f"{Path.home()}//Macdocs/Master/Internship/Data/{experiment_number}")
 chromatogram_directory = Path(experiment_folder, f"ChromatogramCSV")
 conditions_file = Path(experiment_folder, f"{experiment_number}_conditions.csv")
@@ -65,57 +67,56 @@ for c in chroms:
     internal_standard_integral_look_ahead(c, is_start, is_end)
     c.signal = c.signal / c.internal_standard.height
 
-    print(c.internal_standard.integral)
+    #print(c.internal_standard.integral)
 
 
-#threshold = analysis.peak_pick_threshold
-#threshold = [threshold for r in analysis.regions]
-#peak_figure_folder = Path(experiment_folder, "peak_figures")
-#if type(threshold) == float:
-#    peak_figure_folder.mkdir(exist_ok=True)
-#for chrom in chroms:
-#    for reg, thres in zip(analysis.regions, threshold):
-#        inds = indices_from_boundary(chrom.time, reg[0], reg[1])
-#        time = chrom.time[inds]
-#        signal = chrom.signal[inds]
-#        picked_peaks = find_peaks_scipy(
-#            signal,
-#            threshold=thres,
-#            min_dist=analysis.peak_distance,
-#            max_inten=1e100,
-#            prominence=analysis.prominence,
-#            wlen=1001,
-#            look_ahead=analysis.boundary_window,
-#            smooth_window=11,
-#        )
-#        peak_features = peak_indices_to_times(time, picked_peaks)
-#        peaks = []
-#        for x in range(0, len(picked_peaks["Peak_indices"])):
-#            pk_idx = picked_peaks["Peak_indices"][x]
-#            start_idx = picked_peaks["Peak_start_indices"][x]
-#            end_idx = picked_peaks["Peak_end_indices"][x]
-#
-#            retention_time = time[pk_idx]
-#            start = time[start_idx]
-#            end = time[end_idx]
-#            height = signal[pk_idx] - min(
-#                signal
-#            )  # subtract the baseline of the region from the peak height
-#            peaks.append(
-#                Classes.Peak(retention_time, start, end, indices=[], height=height)
-#            )
-#        if plot_figures == True:
-#            peak_area(
-#                time,
-#                signal,
-#                picked_peaks,
-#                save_folder=f"{peak_figure_folder}/{reg[0]}_{chrom.filename[:-4]}.png",
-#            )
-#        add_peaks_to_chromatogram(peaks, chrom)
-#    integrate_chromatogram_peaks(chrom, baseline_subtract=True)
+threshold = analysis.peak_pick_threshold
+threshold = [threshold for r in analysis.regions]
+peak_figure_folder = Path(experiment_folder, "peak_figures")
+if type(threshold) == float:
+    peak_figure_folder.mkdir(exist_ok=True)
+for chrom in chroms:
+    for reg, thres in zip(analysis.regions, threshold):
+        inds = indices_from_boundary(chrom.time, reg[0], reg[1])
+        time = chrom.time[inds]
+        signal = chrom.signal[inds]
+        picked_peaks = find_peaks_scipy(
+            signal,
+            threshold=thres,
+            min_dist=analysis.peak_distance,
+            max_inten=1e100,
+            prominence=analysis.prominence,
+            wlen=1001,
+            look_ahead=analysis.boundary_window,
+            smooth_window=11,
+        )
+        peak_features = peak_indices_to_times(time, picked_peaks)
+        peaks = []
+        for x in range(0, len(picked_peaks["Peak_indices"])):
+            pk_idx = picked_peaks["Peak_indices"][x]
+            start_idx = picked_peaks["Peak_start_indices"][x]
+            end_idx = picked_peaks["Peak_end_indices"][x]
 
+            retention_time = time[pk_idx]
+            start = time[start_idx]
+            end = time[end_idx]
+            height = signal[pk_idx] - min(
+                signal
+            )  # subtract the baseline of the region from the peak height
+            peaks.append(
+                Classes.Peak(retention_time, start, end, indices=[], height=height)
+            )
+        if plot_figures == True:
+            peak_area(
+                time,
+                signal,
+                picked_peaks,
+                save_folder=f"{peak_figure_folder}/{reg[0]}_{chrom.filename[:-4]}.png",
+            )
+        add_peaks_to_chromatogram(peaks, chrom)
+    integrate_chromatogram_peaks(chrom, baseline_subtract=True)
 
-## heatmap_cluster(chroms)
+### heatmap_cluster(chroms)
 for reg in analysis.deconvolve_regions:
     region_start = analysis.deconvolve_regions[reg]["region_boundaries"][0]
     indices = indices_from_boundary(
@@ -150,7 +151,7 @@ for reg in analysis.deconvolve_regions:
         chrom.peaks = dict(zip(k, v))
 
     pd.DataFrame(fit_values).to_csv(f"{peak_folder}/gaussian_fit_{region_start}.csv")
-
+#
 
 # for chrom in chroms:
 #    peaks_indices = peak_indices_from_file(chrom,f"{peak_collection_directory}\\{chrom.filename}")
@@ -161,21 +162,26 @@ for reg in analysis.deconvolve_regions:
 #    add_peaks_to_chromatogram(peak_features, chrom)
 #    integrate_chromatogram_peaks(chrom)
 
-# print('test')
 
+colors = sns.color_palette("Paired", 10).as_hex()
+
+#sns.set_style("dark")
 fig, ax = plt.subplots()
+ax.set_prop_cycle(color=[c for c in colors])
 for c in chroms:
     ax.plot(
         c.time[analysis.plot_region[0] : analysis.plot_region[1]],
         c.signal[analysis.plot_region[0] : analysis.plot_region[1]],
-        label=c.filename,
+        label=c.filename[7:12]
     )
+handles, labels = ax.get_legend_handles_labels()
+ax.legend(handles, labels, ncol=3, fontsize= 7, bbox_to_anchor=(1.1, 1.1), loc='upper right')
 plt.show()
 
 #heatmap_cluster(chroms,analysis.plot_region, peak_agglomeration_boundary=0.02)
-for c, v in zip(chroms, conditions.series_values):
-    c.write_peak_collection(
-        filename=f"{peak_collection_directory}/{c.filename}",
-        header_text=f"{conditions.series_unit},{v}\n",
-    )
+#for c, v in zip(chroms, conditions.series_values):
+#    c.write_peak_collection(
+#        filename=f"{peak_collection_directory}/{c.filename}",
+#        header_text=f"{conditions.series_unit},{v}\n",
+#    )
 
