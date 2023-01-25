@@ -137,3 +137,68 @@ def peak_collection_series_to_data_report(
             outfile.write("\n")
 
         outfile.write("end_data\n")
+
+
+
+def mineral_peak_collection_series_to_data_report(
+    peak_collection_series, filename, information
+):
+    """
+    Write a peak collection series as a formatted data report file.
+    For mineral experiments
+
+    Parameters
+    ----------
+    peak_collection_series: Classes.PeakCollectionSeries
+    filename: name for file including path
+    information: ChromProcess Analysis_Information object
+
+    Returns
+    -------
+    None
+    """
+
+    if isinstance(filename, str):
+        filename = filename
+    elif isinstance(filename, Path):
+        filename = str(filename)
+
+    analysis_type = information.analysis_type
+
+    conc_fname = f"{filename}_{analysis_type}_concentration_report.csv"
+    integral_fname = f"{filename}_{analysis_type}_integral_report.csv"
+    height_fname = f"{filename}_{analysis_type}_peak_height_report.csv"
+
+    # create output dictionaries
+    (
+        height_dict,
+    ) = peak_collection_series.series_traces_as_dict()
+
+    # create spreadsheet-like output
+    peak_height_header, height_grid = utils.peak_dict_to_spreadsheet(
+        height_dict,
+        peak_collection_series.series_values,
+        peak_collection_series.series_unit,
+    )
+
+    header_text = write_header.write_conditions_header(
+        peak_collection_series.name, peak_collection_series.conditions, information
+    )
+
+    # Write height report to file
+    with open(height_fname, "w") as outfile:
+
+        outfile.write(header_text)
+
+        outfile.write("start_data\n")
+
+        [outfile.write("{},".format(x)) for x in peak_height_header]
+
+        outfile.write("\n")
+        for x in range(0, len(height_grid)):
+            for y in range(0, len(height_grid[x])):
+                val = height_grid[x][y]
+                outfile.write(f"{val},")
+            outfile.write("\n")
+
+        outfile.write("end_data\n")

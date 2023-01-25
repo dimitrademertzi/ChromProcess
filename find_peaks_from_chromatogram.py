@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import seaborn as sns
 from ChromProcess.Loading import conditions_from_csv, chrom_from_csv
+from ChromProcess.Loading.experiment_conditions import mineral_conditions_from_csv
 from ChromProcess.Loading.analysis_info.analysis_from_toml import analysis_from_toml
 from ChromProcess.Utils.signal_processing.deconvolution import deconvolute_peak
 from pathlib import Path
@@ -28,7 +29,11 @@ conditions_file = Path(experiment_folder, f"{experiment_number}_conditions.csv")
 analysis_file = Path(experiment_folder, f"{experiment_number}_analysis_details.toml")
 peak_collection_directory = Path(experiment_folder, f"PeakCollections")
 
-conditions = conditions_from_csv(conditions_file)
+if "FRN" in experiment_number:
+    conditions = conditions_from_csv(conditions_file)
+else:
+    conditions = mineral_conditions_from_csv(conditions_file)
+
 analysis = analysis_from_toml(analysis_file)
 if not valid_deconvolution(analysis):
     print("Invalid deconvolution paramaters")
@@ -68,7 +73,7 @@ for c in chroms:
     c.signal = c.signal / c.internal_standard.height
 
 
-plot_figures = True
+plot_figures = False
 threshold = analysis.peak_pick_threshold
 threshold = [threshold for r in analysis.regions]
 peak_figure_folder = Path(experiment_folder, "peak_figures")

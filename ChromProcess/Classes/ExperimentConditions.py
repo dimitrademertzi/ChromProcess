@@ -64,8 +64,11 @@ class ExperimentConditions:
 
             f.write("end_experiment_information\n")
             f.write("start_conditions\n")
+
+            #if "FRN" in exp_code:
             for c in self.conditions:
                 f.write(f"{c},")
                 [f.write(f"{x},") for x in self.conditions[c]]
                 f.write("\n")
+
             f.write("end_conditions\n")

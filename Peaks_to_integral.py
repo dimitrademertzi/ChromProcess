@@ -5,7 +5,7 @@ from ChromProcess.Loading import analysis_from_toml
 from ChromProcess.Loading import conditions_from_csv
 from pathlib import Path
 
-experiment_number = 'FRN154'
+experiment_number = 'MIN001A'
 experiment_folder = Path(f"{Path.home()}//Macdocs/Master/Internship/Data/{experiment_number}")
 peak_collection_directory = Path(f'{experiment_folder}/PeakCollections')
 conditions_file = Path(f'{experiment_folder}/{experiment_number}_conditions.csv')
@@ -13,7 +13,10 @@ analysis_file = Path(f'{experiment_folder}/{experiment_number}_analysis_details.
 data_report_directory = Path(f'{experiment_folder}/DataReports')
 os.makedirs(data_report_directory, exist_ok=True)
 
-conditions = conditions_from_csv(conditions_file)
+if "FRN" in experiment_number:
+    conditions = conditions_from_csv(conditions_file)
+else:
+    conditions = mineral_conditions_from_csv(conditions_file)
 analysis = analysis_from_toml(analysis_file)
 
 peak_tables = []
@@ -51,5 +54,7 @@ to_remove = []
 #            if max(integral_dict[k]) < cluster_removal_limit:
 #                to_remove = to_remove + [k]
 #        [integral_dict.pop(key) for key in to_remove]
-
-series.write_data_reports(f'{data_report_directory}/{series.name}', analysis) # create arrays for output
+if "FRN" in experiment_number:
+    series.write_data_reports(f'{data_report_directory}/{series.name}', analysis) # create arrays for output
+else:
+    series.write_data_reports(f'{data_report_directory}/{series.name}', analysis) # create arrays for output

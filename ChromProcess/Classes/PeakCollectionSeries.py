@@ -411,3 +411,21 @@ class PeakCollectionSeries:
         """
 
         peak_collection_series_to_data_report(self, filename, information)
+
+
+    def mineral_write_data_reports(self, filename, information):
+        """
+        Write the peak collection series to a formatted data report csv file.
+        For mineral experiments.
+
+        Parameters
+        ----------
+        filename: name for file including path
+        information: ChromProcess Analysis_Information object
+
+        Returns
+        -------
+        None
+        """
+
+        mineral_peak_collection_series_to_data_report(self, filename, information)
