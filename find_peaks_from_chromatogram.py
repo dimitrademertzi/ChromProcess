@@ -1,6 +1,5 @@
 # from pathlib import Path
 import os
-from test import multiply_string
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import seaborn as sns
@@ -69,7 +68,7 @@ for c in chroms:
     c.signal = c.signal / c.internal_standard.height
 
 
-plot_figures = False
+plot_figures = True
 threshold = analysis.peak_pick_threshold
 threshold = [threshold for r in analysis.regions]
 peak_figure_folder = Path(experiment_folder, "peak_figures")
@@ -116,9 +115,11 @@ for chrom in chroms:
         add_peaks_to_chromatogram(peaks, chrom)
     integrate_chromatogram_peaks(chrom, baseline_subtract=True)
 
+
 ### heatmap_cluster(chroms)
-for reg in analysis.deconvolve_regions:
+for count, reg in enumerate(analysis.deconvolve_regions):
     region_start = analysis.deconvolve_regions[reg]["region_boundaries"][0]
+    region_end = analysis.deconvolve_regions[reg]["region_boundaries"][1]
     indices = indices_from_boundary(
         chroms[0].time,
         analysis.deconvolve_regions[reg]["region_boundaries"][0],
@@ -143,9 +144,20 @@ for reg in analysis.deconvolve_regions:
             if chrom_filename[:-1] not in analysis.deconvolve_regions[reg]["selected_chromatograms"]:
                 deconvolve_this = False
             else:
-                print()
-                
+                exit
+    
         if deconvolve_this:
+            #filter chromatogram.peaks for any peaks between region start and region end
+            #if any peaks is within this margin remove it from chromatogram.peaks
+            peaks_to_remove = []
+            for peak in chrom.peaks:
+                #print(peak)
+                if (region_start < peak and  peak < region_end):
+                    #print(peak)
+                    peaks_to_remove.append(peak)
+            for peak in peaks_to_remove:
+                chrom.peaks.pop(peak)
+    
             popt, pcov, mse, peaks = deconvolute_peak(
                 chrom,
                 peak_folder,
@@ -161,6 +173,7 @@ for reg in analysis.deconvolve_regions:
             )
             k = [*chrom.peaks.keys()]
             v = [*chrom.peaks.values()]
+
             for peak in peaks:
                 rt = peak.retention_time
                 idx = np.where((chrom.time >= peak.start) & (chrom.time <= peak.end))[0]
@@ -169,13 +182,14 @@ for reg in analysis.deconvolve_regions:
                 k.insert(insert, rt)
                 v.insert(insert, peak)
             chrom.peaks = dict(zip(k, v))
+
     np.savetxt(
         f"{peak_folder}/gaussian_fit_{region_start}.csv",
         fit_values,
         fmt="%s",
         delimiter=",",
     )
-#
+
 
 # for chrom in chroms:
 #    peaks_indices = peak_indices_from_file(chrom,f"{peak_collection_directory}\\{chrom.filename}")
@@ -201,21 +215,21 @@ for color in color_palette_list:
 colors2 = colors[::-1]
 
 # sns.set_style("dark")
-fig, ax = plt.subplots()
-ax.set_prop_cycle(color=[c for c in colors2])
-for c in chroms:
-    ax.plot(
-        c.time[analysis.plot_region[0] : analysis.plot_region[1]],
-        c.signal[analysis.plot_region[0] : analysis.plot_region[1]],
-        label=c.filename.split("_")[1].split(".")[0],
-    )
-handles, labels = ax.get_legend_handles_labels()
-ax.legend(
-    handles, labels, ncol=2, fontsize=10, bbox_to_anchor=(1.1, 1.1), loc="upper right"
-)
-# ax.set_xlim(12.0, 13.0)
-# ax.set_ylim(0, 0.5) #A series (-0.05), B series (-0.0025), C series (0)
-plt.show()
+#fig, ax = plt.subplots()
+#ax.set_prop_cycle(color=[c for c in colors2])
+#for c in chroms:
+#    ax.plot(
+#        c.time[analysis.plot_region[0] : analysis.plot_region[1]],
+#        c.signal[analysis.plot_region[0] : analysis.plot_region[1]],
+#        label=c.filename.split("_")[1].split(".")[0],
+#    )
+#handles, labels = ax.get_legend_handles_labels()
+#ax.legend(
+#    handles, labels, ncol=2, fontsize=10, bbox_to_anchor=(1.1, 1.1), loc="upper right"
+#)
+## ax.set_xlim(12.0, 13.0)
+## ax.set_ylim(0, 0.5) #A series (-0.05), B series (-0.0025), C series (0)
+#plt.show()
 
 # heatmap_cluster(chroms,analysis.plot_region, peak_agglomeration_boundary=0.02)
 for c, v in zip(chroms, conditions.series_values):
