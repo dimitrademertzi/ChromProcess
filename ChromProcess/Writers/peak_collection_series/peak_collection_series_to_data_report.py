@@ -171,6 +171,9 @@ def mineral_peak_collection_series_to_data_report(
 
     # create output dictionaries
     (
+        conc_dict,
+        err_dict,
+        integral_dict,
         height_dict,
     ) = peak_collection_series.series_traces_as_dict()
 

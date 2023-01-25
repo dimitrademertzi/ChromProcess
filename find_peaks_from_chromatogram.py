@@ -3,8 +3,7 @@ import os
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import seaborn as sns
-from ChromProcess.Loading import conditions_from_csv, chrom_from_csv
-from ChromProcess.Loading.experiment_conditions import mineral_conditions_from_csv
+from ChromProcess.Loading import conditions_from_csv, mineral_conditions_from_csv, chrom_from_csv
 from ChromProcess.Loading.analysis_info.analysis_from_toml import analysis_from_toml
 from ChromProcess.Utils.signal_processing.deconvolution import deconvolute_peak
 from pathlib import Path
@@ -220,25 +219,25 @@ for color in color_palette_list:
 colors2 = colors[::-1]
 
 # sns.set_style("dark")
-#fig, ax = plt.subplots()
-#ax.set_prop_cycle(color=[c for c in colors2])
-#for c in chroms:
-#    ax.plot(
-#        c.time[analysis.plot_region[0] : analysis.plot_region[1]],
-#        c.signal[analysis.plot_region[0] : analysis.plot_region[1]],
-#        label=c.filename.split("_")[1].split(".")[0],
-#    )
-#handles, labels = ax.get_legend_handles_labels()
-#ax.legend(
-#    handles, labels, ncol=2, fontsize=10, bbox_to_anchor=(1.1, 1.1), loc="upper right"
-#)
-## ax.set_xlim(12.0, 13.0)
-## ax.set_ylim(0, 0.5) #A series (-0.05), B series (-0.0025), C series (0)
-#plt.show()
+fig, ax = plt.subplots()
+ax.set_prop_cycle(color=[c for c in colors2])
+for c in chroms:
+    ax.plot(
+        c.time[analysis.plot_region[0] : analysis.plot_region[1]],
+        c.signal[analysis.plot_region[0] : analysis.plot_region[1]],
+        label=c.filename.split("_")[1].split(".")[0],
+    )
+handles, labels = ax.get_legend_handles_labels()
+ax.legend(
+    handles, labels, ncol=2, fontsize=10, bbox_to_anchor=(1.1, 1.1), loc="upper right"
+)
+# ax.set_xlim(12.0, 13.0)
+# ax.set_ylim(0, 0.5) #A series (-0.05), B series (-0.0025), C series (0)
+plt.show()
 
 # heatmap_cluster(chroms,analysis.plot_region, peak_agglomeration_boundary=0.02)
-for c, v in zip(chroms, conditions.series_values):
-    c.write_peak_collection(
-        filename=f"{peak_collection_directory}/{c.filename}",
-        header_text=f"{conditions.series_unit},{v}\n",
-    )
+#for c, v in zip(chroms, conditions.series_values):
+#    c.write_peak_collection(
+#        filename=f"{peak_collection_directory}/{c.filename}",
+#        header_text=f"{conditions.series_unit},{v}\n",
+#    )

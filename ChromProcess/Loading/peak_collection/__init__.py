@@ -1,1 +1,2 @@
 from .peak_collection_from_csv import peak_collection_from_csv
+from .peak_collection_from_csv import mineral_peak_collection_from_csv

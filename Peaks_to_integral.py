@@ -1,8 +1,8 @@
 import os
 from ChromProcess import Classes
-from ChromProcess.Loading import peak_collection_from_csv
+from ChromProcess.Loading import peak_collection_from_csv, mineral_peak_collection_from_csv
 from ChromProcess.Loading import analysis_from_toml
-from ChromProcess.Loading import conditions_from_csv
+from ChromProcess.Loading import conditions_from_csv, mineral_conditions_from_csv
 from pathlib import Path
 
 experiment_number = 'MIN001A'
@@ -20,10 +20,13 @@ else:
 analysis = analysis_from_toml(analysis_file)
 
 peak_tables = []
-for file in os.listdir(peak_collection_directory):
-    if file.endswith('.csv') or file.endswith('.CSV'):
-        peak_tables.append(peak_collection_from_csv(f'{peak_collection_directory}/{file}',round_digits=7))
 
+for file in os.listdir(peak_collection_directory):
+    if ((file.endswith('.csv') or file.endswith('.CSV')) and ".DS_Store" not in file):
+        if "FRN" in experiment_number:
+            peak_tables.append(peak_collection_from_csv(f'{peak_collection_directory}/{file}',round_digits=7))
+        else:
+            peak_tables.append(mineral_peak_collection_from_csv(f'{peak_collection_directory}/{file}',round_digits=7))
 # Create series of peak collections
 series = Classes.PeakCollectionSeries(
                                     peak_tables, name = f'{experiment_number}',
@@ -57,4 +60,4 @@ to_remove = []
 if "FRN" in experiment_number:
     series.write_data_reports(f'{data_report_directory}/{series.name}', analysis) # create arrays for output
 else:
-    series.write_data_reports(f'{data_report_directory}/{series.name}', analysis) # create arrays for output
+    series.mineral_write_data_reports(f'{data_report_directory}/{series.name}', analysis) # create arrays for output

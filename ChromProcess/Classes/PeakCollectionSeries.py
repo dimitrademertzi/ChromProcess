@@ -2,7 +2,7 @@ import numpy as np
 
 from ChromProcess.Processing.peak import assign_peak
 from ChromProcess.Utils.utils.clustering import cluster
-from ChromProcess.Writers import peak_collection_series_to_data_report
+from ChromProcess.Writers import peak_collection_series_to_data_report, mineral_peak_collection_series_to_data_report
 
 
 class PeakCollectionSeries:
