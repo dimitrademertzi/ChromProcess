@@ -19,7 +19,7 @@ from ChromProcess.Processing import internal_standard_integral_look_ahead
 import numpy as np
 from ChromProcess import Classes
 
-experiment_number = "MIN001A"
+experiment_number = "MIN001B"
 experiment_folder = Path(
     f"{Path.home()}//Macdocs/Master/Internship/Data/{experiment_number}"
 )
@@ -71,7 +71,6 @@ for c in chroms:
     internal_standard_integral_look_ahead(c, is_start, is_end)
     c.signal = c.signal / c.internal_standard.height
 
-
 plot_figures = False
 threshold = analysis.peak_pick_threshold
 threshold = [threshold for r in analysis.regions]
@@ -109,6 +108,9 @@ for chrom in chroms:
             peaks.append(
                 Classes.Peak(retention_time, start, end, indices=[], height=height)
             )
+            #if reg[0] == 17.58:
+            #    plot_figures = True
+
         if plot_figures == True:
             peak_area(
                 time,
@@ -218,7 +220,7 @@ for color in color_palette_list:
     colors += sns.color_palette(f"{color}", 5).as_hex()
 colors2 = colors[::-1]
 
-# sns.set_style("dark")
+#sns.set_style("dark")
 fig, ax = plt.subplots()
 ax.set_prop_cycle(color=[c for c in colors2])
 for c in chroms:
@@ -235,7 +237,7 @@ ax.legend(
 # ax.set_ylim(0, 0.5) #A series (-0.05), B series (-0.0025), C series (0)
 plt.show()
 
-# heatmap_cluster(chroms,analysis.plot_region, peak_agglomeration_boundary=0.02)
+#heatmap_cluster(chroms,analysis.plot_region, peak_agglomeration_boundary=0.02)
 #for c, v in zip(chroms, conditions.series_values):
 #    c.write_peak_collection(
 #        filename=f"{peak_collection_directory}/{c.filename}",

@@ -5,7 +5,7 @@ from ChromProcess.Loading import analysis_from_toml
 from ChromProcess.Loading import conditions_from_csv, mineral_conditions_from_csv
 from pathlib import Path
 
-experiment_number = 'MIN001A'
+experiment_number = 'MIN001B'
 experiment_folder = Path(f"{Path.home()}//Macdocs/Master/Internship/Data/{experiment_number}")
 peak_collection_directory = Path(f'{experiment_folder}/PeakCollections')
 conditions_file = Path(f'{experiment_folder}/{experiment_number}_conditions.csv')
@@ -18,14 +18,18 @@ if "FRN" in experiment_number:
 else:
     conditions = mineral_conditions_from_csv(conditions_file)
 analysis = analysis_from_toml(analysis_file)
-
 peak_tables = []
+peak_files = os.listdir(peak_collection_directory)
+peak_files.pop(peak_files.index('.DS_Store'))
 
-for file in os.listdir(peak_collection_directory):
-    if ((file.endswith('.csv') or file.endswith('.CSV')) and ".DS_Store" not in file):
+for file in peak_files:
+    if file.endswith('.csv') or file.endswith('.CSV'):
+        print(file)
         if "FRN" in experiment_number:
             peak_tables.append(peak_collection_from_csv(f'{peak_collection_directory}/{file}',round_digits=7))
         else:
+            if 'Aii2' in file:
+                print('eyo')
             peak_tables.append(mineral_peak_collection_from_csv(f'{peak_collection_directory}/{file}',round_digits=7))
 # Create series of peak collections
 series = Classes.PeakCollectionSeries(
@@ -33,13 +37,13 @@ series = Classes.PeakCollectionSeries(
                                     conditions = conditions.conditions
                                     )
 
-IS_pos = 9.34
+IS_pos = 9.33
 series.align_peaks_to_IS(IS_pos)
 
 #series.reference_integrals_to_IS()
  # 5% of internal standard integral if integrals are normalised to IS
 #series.remove_peaks_below_threshold(peak_removal_limit)
-peak_agglomeration_boundary = 0.02 # distance cutoff 
+peak_agglomeration_boundary = 0.0185 # distance cutoff 
 # cluster_threshold = 0.008
 series.get_peak_clusters(bound = peak_agglomeration_boundary)
 to_remove = []
