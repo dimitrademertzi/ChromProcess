@@ -1,5 +1,7 @@
 # from pathlib import Path
 import os
+import matplotlib
+matplotlib.use('Qt5Agg')
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import seaborn as sns
@@ -19,7 +21,8 @@ from ChromProcess.Processing import internal_standard_integral_look_ahead
 import numpy as np
 from ChromProcess import Classes
 
-experiment_number = "MIN001B"
+
+experiment_number = "MIN001C"
 experiment_folder = Path(
     f"{Path.home()}//Macdocs/Master/Internship/Data/{experiment_number}"
 )
@@ -110,7 +113,8 @@ for chrom in chroms:
             )
             #if reg[0] == 17.58:
             #    plot_figures = True
-
+        #if reg[0] == 16.31:
+        #    plot_figures = True
         if plot_figures == True:
             peak_area(
                 time,
@@ -131,6 +135,7 @@ for count, reg in enumerate(analysis.deconvolve_regions):
         analysis.deconvolve_regions[reg]["region_boundaries"][0],
         analysis.deconvolve_regions[reg]["region_boundaries"][1],
     )
+
     peak_folder = f"{experiment_folder}/deconvolved_peaks/{reg, region_start}"
     os.makedirs(peak_folder, exist_ok=True)
     fit_values = np.array(["sample_name", "mse"])
@@ -146,6 +151,7 @@ for count, reg in enumerate(analysis.deconvolve_regions):
     for chrom in chroms:
         chrom_filename = chrom.filename.split("_")[1].split(".")[0]
         deconvolve_this = True
+
         if chrom_selection == True:
             if chrom_filename[:-1] not in analysis.deconvolve_regions[reg]["selected_chromatograms"]:
                 deconvolve_this = False
@@ -233,8 +239,8 @@ handles, labels = ax.get_legend_handles_labels()
 ax.legend(
     handles, labels, ncol=2, fontsize=10, bbox_to_anchor=(1.1, 1.1), loc="upper right"
 )
-# ax.set_xlim(12.0, 13.0)
-# ax.set_ylim(0, 0.5) #A series (-0.05), B series (-0.0025), C series (0)
+#ax.set_xlim(11.17, 11.30)
+#ax.set_ylim(0, 0.3) #A series (-0.05), B series (-0.0025), C series (0)
 plt.show()
 
 #heatmap_cluster(chroms,analysis.plot_region, peak_agglomeration_boundary=0.02)

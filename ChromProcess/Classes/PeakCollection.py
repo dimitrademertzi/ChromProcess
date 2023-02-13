@@ -33,12 +33,12 @@ class PeakCollection:
         self.series_value = 0.0
         self.series_unit = "not specified"
         self.internal_standard = Classes.Peak(0.0, 0.0, 0.0)
-        self.peaks = [Classes.Peak(0.0, 0.0, 0.0)]
+        self.peaks:list[Classes.Peak] = [Classes.Peak(0.0, 0.0, 0.0)]
         self.mass_spectra = []
         self.initial_IS_pos = 0.0
         self.assigned_compounds = []
 
-    def remove_peaks_below_threshold(self, threshold):
+    def remove_peaks_below_threshold(self, threshold, metric = "integral"):
         """
         Remove peaks below a certain integral threshold (note that this
         operates on the values held in the Peak integral attributes. If
@@ -56,9 +56,16 @@ class PeakCollection:
         """
 
         del_idx = []
-        for c, pk in enumerate(self.peaks):
-            if pk.integral < threshold:
-                del_idx.append(c)
+        if metric == "integral":
+            for c, pk in enumerate(self.peaks):
+                if pk.integral < threshold:
+                    del_idx.append(c)
+        elif metric == "height":
+            for c, pk in enumerate(self.peaks):
+                if pk.height < threshold:
+                    del_idx.append(c)
+        else:
+            print("invalid threshold metric")
 
         self.peaks = [v for i, v in enumerate(self.peaks) if i not in del_idx]
 
