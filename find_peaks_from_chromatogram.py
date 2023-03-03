@@ -22,7 +22,7 @@ import numpy as np
 from ChromProcess import Classes
 
 
-experiment_number = "MIN001C"
+experiment_number = "MIN002"
 experiment_folder = Path(
     f"{Path.home()}//Macdocs/Master/Internship/Data/{experiment_number}"
 )
@@ -45,7 +45,8 @@ if not valid_deconvolution(analysis):
 os.makedirs(peak_collection_directory, exist_ok=True)
 chromatogram_files = os.listdir(chromatogram_directory)
 chromatogram_files.sort()
-chromatogram_files.remove(".DS_Store")
+if '.DS_Store' in chromatogram_files:
+    chromatogram_files.remove(".DS_Store")
 chroms = []
 for f in chromatogram_files:
     chroms.append(chrom_from_csv(f"{chromatogram_directory}/{f}"))
@@ -130,6 +131,7 @@ for chrom in chroms:
 for count, reg in enumerate(analysis.deconvolve_regions):
     region_start = analysis.deconvolve_regions[reg]["region_boundaries"][0]
     region_end = analysis.deconvolve_regions[reg]["region_boundaries"][1]
+    #deconvolution_samples = analysis.deconvolve_regions[reg]["selected_chromatograms"]
     indices = indices_from_boundary(
         chroms[0].time,
         analysis.deconvolve_regions[reg]["region_boundaries"][0],
@@ -153,7 +155,7 @@ for count, reg in enumerate(analysis.deconvolve_regions):
         deconvolve_this = True
 
         if chrom_selection == True:
-            if chrom_filename[:-1] not in analysis.deconvolve_regions[reg]["selected_chromatograms"]:
+            if chrom_filename[0] not in analysis.deconvolve_regions[reg]["selected_chromatograms"]:
                 deconvolve_this = False
             else:
                 exit
@@ -215,15 +217,21 @@ for count, reg in enumerate(analysis.deconvolve_regions):
 colors = []
 color_palette_list = [
     "Reds",
-    "Purples",
     "RdPu",
     "Wistia",
     "Blues",
     "YlGn",
     "gray_r",
-]  # "copper_r", "GnBu", "BuPu", , "hls", "Set2", "RdPu", ]
-for color in color_palette_list:
-    colors += sns.color_palette(f"{color}", 5).as_hex()
+]  # "copper_r", "GnBu", "BuPu", , "hls", "Set2", "RdPu", "Purples", ]
+color_palette_list_for_triplicates = [
+    "RdPu", "RdPu", "RdPu",
+    "Wistia", "Wistia", "Wistia",
+    "Blues", "Blues", "Blues",
+    "YlGn", "YlGn", "YlGn",
+    "gray_r", "gray_r", "gray_r", "gray_r", "gray_r",
+] 
+for color in color_palette_list_for_triplicates:
+    colors += sns.color_palette(f"{color}", 2).as_hex()
 colors2 = colors[::-1]
 
 #sns.set_style("dark")

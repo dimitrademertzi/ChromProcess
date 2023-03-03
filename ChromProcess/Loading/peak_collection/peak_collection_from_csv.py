@@ -161,7 +161,6 @@ def mineral_peak_collection_from_csv(filename, round_digits=3):
 
                 else:
                     read = read_line(line)
-                    print(read[0])
 
                     IS = Classes.Peak(
                         read[0],
@@ -177,7 +176,6 @@ def mineral_peak_collection_from_csv(filename, round_digits=3):
 
             else:
                 rd = read_line(line)
-                print(f"eyo{read[0]}")
                 peaks.append(
                     Classes.Peak(
                         rd[0],

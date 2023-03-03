@@ -173,6 +173,8 @@ def find_peaks_scipy(
     """
 
     # Smooth out the function before starting the picking
+    if signal == np.array([]):
+        print("eyo")
     smooth_signal = sig.savitzky_golay(signal, smooth_window, 3, deriv=0, rate=1)
 
     height_ = [max(smooth_signal) * threshold, max_inten]
