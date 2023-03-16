@@ -592,7 +592,7 @@ def deconvolute_peak(
     #
     if "peaks" in info_dict:
         initial_guess = []
-        boundaries = [[],[]]
+        boundaries = [[], []]
         for peak_dict in info_dict["peaks"].values():
             if "amplitude" in peak_dict:
                 boundaries[0].append(peak_dict["amplitude"][0])
@@ -614,15 +614,15 @@ def deconvolute_peak(
                 boundaries[0].append(info_dict["standard_sigma"][0])
                 boundaries[1].append(info_dict["standard_sigma"][2])
                 initial_guess.append(info_dict["standard_sigma"][1])
-            #add values for the automatic baseline adaptation
+            # add values for the automatic baseline adaptation
         initial_guess.append(0)
         boundaries[0].append(0)
         if not min(signal) == 0:
             boundaries[1].append(min(signal))
         else:
-            boundaries[1].append(min(signal)+0.00001)
+            boundaries[1].append(min(signal) + 0.00001)
 
-    else: #this code was used for the old file system
+    else:  # this code was used for the old file system
         if "lower_fit_boundaries" in info_dict:
             boundaries = [
                 [*info_dict["lower_fit_boundaries"], 0],
@@ -643,7 +643,8 @@ def deconvolute_peak(
                     [
                         max(signal),
                         time[0]
-                        + ((time[-1] - time[0]) / (info_dict["number_of_peaks"] + 2)) * n,
+                        + ((time[-1] - time[0]) / (info_dict["number_of_peaks"] + 2))
+                        * n,
                         0.009,
                     ]
                 )

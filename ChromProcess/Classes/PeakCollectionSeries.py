@@ -2,8 +2,12 @@ import numpy as np
 
 from ChromProcess.Processing.peak import assign_peak
 from ChromProcess.Utils.utils.clustering import cluster
-from ChromProcess.Writers import peak_collection_series_to_data_report, mineral_peak_collection_series_to_data_report
+from ChromProcess.Writers import (
+    peak_collection_series_to_data_report,
+    mineral_peak_collection_series_to_data_report,
+)
 from ChromProcess.Classes import PeakCollection, Peak
+
 
 class PeakCollectionSeries:
     def __init__(self, peak_collections, name="not specified", conditions={}):
@@ -55,7 +59,7 @@ class PeakCollectionSeries:
         self.conc_err_series = []
         self.series_assigned_compounds = []
 
-    def remove_peaks_below_threshold(self, threshold, metric = "integral"):
+    def remove_peaks_below_threshold(self, threshold, metric="integral"):
         """
         Remove peaks whose integrals fall below a threshold.
 
@@ -128,7 +132,7 @@ class PeakCollectionSeries:
 
         clusts = []
         for c in cluster(peaks, bound=bound):
-            
+
             clusts.append(c)
 
         self.clusters = clusts
@@ -411,7 +415,6 @@ class PeakCollectionSeries:
         """
 
         peak_collection_series_to_data_report(self, filename, information)
-
 
     def mineral_write_data_reports(self, filename, information):
         """

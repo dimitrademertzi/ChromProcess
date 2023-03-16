@@ -1,11 +1,17 @@
 # from pathlib import Path
 import os
 import matplotlib
-matplotlib.use('Qt5Agg')
+import csv
+
+matplotlib.use("Qt5Agg")
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import seaborn as sns
-from ChromProcess.Loading import conditions_from_csv, mineral_conditions_from_csv, chrom_from_csv
+from ChromProcess.Loading import (
+    conditions_from_csv,
+    mineral_conditions_from_csv,
+    chrom_from_csv,
+)
 from ChromProcess.Loading.analysis_info.analysis_from_toml import analysis_from_toml
 from ChromProcess.Utils.signal_processing.deconvolution import deconvolute_peak
 from pathlib import Path
@@ -22,7 +28,7 @@ import numpy as np
 from ChromProcess import Classes
 
 
-experiment_number = "MIN002"
+experiment_number = "MIN003"
 experiment_folder = Path(
     f"{Path.home()}//Macdocs/Master/Internship/Data/{experiment_number}"
 )
@@ -45,9 +51,9 @@ if not valid_deconvolution(analysis):
 os.makedirs(peak_collection_directory, exist_ok=True)
 chromatogram_files = os.listdir(chromatogram_directory)
 chromatogram_files.sort()
-if '.DS_Store' in chromatogram_files:
+if ".DS_Store" in chromatogram_files:
     chromatogram_files.remove(".DS_Store")
-chroms = []
+chroms: list[Classes.Chromatogram] = []
 for f in chromatogram_files:
     chroms.append(chrom_from_csv(f"{chromatogram_directory}/{f}"))
 
@@ -69,19 +75,36 @@ for f in chromatogram_files:
 is_start = analysis.internal_standard_region[0]
 is_end = analysis.internal_standard_region[1]
 for c in chroms:
+    c.mineral = c.filename.split("_")[1].split(".")[0]
     c.signal = c.signal - min(
         c.signal[analysis.plot_region[0] : analysis.plot_region[1]]
     )
     internal_standard_integral_look_ahead(c, is_start, is_end)
     c.signal = c.signal / c.internal_standard.height
 
-plot_figures = False
+#generate sample names of reliable samples
+sample_names = []
+for chrom in chroms:
+    if len(chrom.mineral) == 3:
+        sample_names.append(chrom.mineral)
+
+with open(f"{experiment_folder}/{experiment_number}_sample_names.csv", "w") as file:
+        writer = csv.writer(file)
+        writer.writerow(sample_names)
+
 threshold = analysis.peak_pick_threshold
 threshold = [threshold for r in analysis.regions]
 peak_figure_folder = Path(experiment_folder, "peak_figures")
 if type(threshold) == float:
     peak_figure_folder.mkdir(exist_ok=True)
+
+
 for chrom in chroms:
+    plot_figures = False
+
+    if len(chrom.mineral) != 3:
+        plot_figures = False
+
     for reg, thres in zip(analysis.regions, threshold):
         inds = indices_from_boundary(chrom.time, reg[0], reg[1])
         time = chrom.time[inds]
@@ -112,10 +135,11 @@ for chrom in chroms:
             peaks.append(
                 Classes.Peak(retention_time, start, end, indices=[], height=height)
             )
-            #if reg[0] == 17.58:
+            # if reg[0] == 17.58:
             #    plot_figures = True
-        #if reg[0] == 16.31:
+        # if reg[0] == 16.31:
         #    plot_figures = True
+
         if plot_figures == True:
             peak_area(
                 time,
@@ -131,7 +155,7 @@ for chrom in chroms:
 for count, reg in enumerate(analysis.deconvolve_regions):
     region_start = analysis.deconvolve_regions[reg]["region_boundaries"][0]
     region_end = analysis.deconvolve_regions[reg]["region_boundaries"][1]
-    #deconvolution_samples = analysis.deconvolve_regions[reg]["selected_chromatograms"]
+    # deconvolution_samples = analysis.deconvolve_regions[reg]["selected_chromatograms"]
     indices = indices_from_boundary(
         chroms[0].time,
         analysis.deconvolve_regions[reg]["region_boundaries"][0],
@@ -151,38 +175,46 @@ for count, reg in enumerate(analysis.deconvolve_regions):
         chrom_selection = True
 
     for chrom in chroms:
-        chrom_filename = chrom.filename.split("_")[1].split(".")[0]
         deconvolve_this = True
+        if len(chrom.mineral) != 3:
+            deconvolve_this = False
 
         if chrom_selection == True:
-            if chrom_filename[0] not in analysis.deconvolve_regions[reg]["selected_chromatograms"]:
+            deconvolve_this = False
+            if (
+                f"{chrom.mineral[0]}"
+                in analysis.deconvolve_regions[reg]["selected_chromatograms"]
+                or f"{chrom.mineral[0]}{chrom.mineral[2]}"
+                in analysis.deconvolve_regions[reg]["selected_chromatograms"]
+            ):
+                deconvolve_this = True
+
+            if len(chrom.mineral) != 3:
                 deconvolve_this = False
-            else:
-                exit
-    
+
         if deconvolve_this:
-            #filter chromatogram.peaks for any peaks between region start and region end
-            #if any peaks is within this margin remove it from chromatogram.peaks
+            # filter chromatogram.peaks for any peaks between region start and region end
+            # if any peaks is within this margin remove it from chromatogram.peaks
             peaks_to_remove = []
             for peak in chrom.peaks:
-                #print(peak)
-                if (region_start < peak and  peak < region_end):
-                    #print(peak)
+                # print(peak)
+                if region_start < peak and peak < region_end:
+                    # print(peak)
                     peaks_to_remove.append(peak)
             for peak in peaks_to_remove:
                 chrom.peaks.pop(peak)
-    
+
             popt, pcov, mse, peaks = deconvolute_peak(
                 chrom,
                 peak_folder,
                 indices,
                 analysis.deconvolve_regions[reg],
-                plotting=True,
+                plotting=False,
             )
             fit_values = np.vstack(
                 (
                     fit_values,
-                    np.array([chrom.filename.split("_")[1].split(".")[0], mse, *popt]),
+                    np.array([chrom.mineral, mse, *popt]),
                 )
             )
             k = [*chrom.peaks.keys()]
@@ -215,43 +247,49 @@ for count, reg in enumerate(analysis.deconvolve_regions):
 #    integrate_chromatogram_peaks(chrom)
 
 colors = []
-color_palette_list = [
-    "Reds",
-    "RdPu",
-    "Wistia",
-    "Blues",
-    "YlGn",
-    "gray_r",
-]  # "copper_r", "GnBu", "BuPu", , "hls", "Set2", "RdPu", "Purples", ]
+# color_palette_list = [
+#    "Reds",
+#    "RdPu",
+#    "Wistia",
+#    "Blues",
+#    "YlGn",
+#    "gray_r",
+# ]  # "copper_r", "GnBu", "BuPu", , "hls", "Set2", "RdPu", "Purples", ]
 color_palette_list_for_triplicates = [
     "RdPu", "RdPu", "RdPu",
     "Wistia", "Wistia", "Wistia",
     "Blues", "Blues", "Blues",
-    "YlGn", "YlGn", "YlGn",
-    "gray_r", "gray_r", "gray_r", "gray_r", "gray_r",
-] 
+    "YlGn", "YlGn",
+    "gray_r", "gray_r", "gray_r",
+]
 for color in color_palette_list_for_triplicates:
-    colors += sns.color_palette(f"{color}", 2).as_hex()
+    colors += sns.color_palette(f"{color}", 3).as_hex()
 colors2 = colors[::-1]
 
-#sns.set_style("dark")
+min_list = ["M", "F", "G", "B", "H"]
+# sns.set_style("dark")
 fig, ax = plt.subplots()
 ax.set_prop_cycle(color=[c for c in colors2])
 for c in chroms:
-    ax.plot(
-        c.time[analysis.plot_region[0] : analysis.plot_region[1]],
-        c.signal[analysis.plot_region[0] : analysis.plot_region[1]],
-        label=c.filename.split("_")[1].split(".")[0],
-    )
+    if c.mineral[0] in min_list:
+        ax.plot(
+            c.time[analysis.plot_region[0] : analysis.plot_region[1]],
+            c.signal[analysis.plot_region[0] : analysis.plot_region[1]],
+            label=c.mineral,
+        )
 handles, labels = ax.get_legend_handles_labels()
 ax.legend(
     handles, labels, ncol=2, fontsize=10, bbox_to_anchor=(1.1, 1.1), loc="upper right"
 )
-#ax.set_xlim(11.17, 11.30)
-#ax.set_ylim(0, 0.3) #A series (-0.05), B series (-0.0025), C series (0)
+# ax.set_xlim(11.17, 11.30)
+# ax.set_ylim(0, 0.3) #A series (-0.05), B series (-0.0025), C series (0)
 plt.show()
 
-#heatmap_cluster(chroms,analysis.plot_region, peak_agglomeration_boundary=0.02)
+#removing non-reliable samples that are needed for raw chromatograms and creating PeakCollections files
+#for c in chroms:
+#    if 'nogoodsample' in c.filename:
+#        chroms.remove(c)
+#
 #for c, v in zip(chroms, conditions.series_values):
 #    c.write_peak_collection(
 #        filename=f"{peak_collection_directory}/{c.filename}",

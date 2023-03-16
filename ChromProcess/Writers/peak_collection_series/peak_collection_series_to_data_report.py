@@ -139,7 +139,6 @@ def peak_collection_series_to_data_report(
         outfile.write("end_data\n")
 
 
-
 def mineral_peak_collection_series_to_data_report(
     peak_collection_series, filename, information
 ):

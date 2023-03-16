@@ -50,11 +50,10 @@ class AnalysisInformation:
         self.internal_standard_concentration = 0.0
         self.internal_standard_concentration_error = 0.0
         self.deconvolve_regions = {}
-        self.plot_region = [0,-1]
+        self.plot_region = [0, -1]
         self.prominence = 0.0
         self.peak_distance = 1
         self.boundary_window = 1
-
 
     def write_to_file(self, directory=""):
         """

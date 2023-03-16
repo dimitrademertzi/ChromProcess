@@ -33,45 +33,49 @@ def find_peak_boundaries_look_ahead(signal, peaks_indices, look_ahead=1):
         Indices of peak ends.
     """
 
-    peak_starts = [] #list to which to add the 
-    for n in range(0,len(peaks_indices)):
-        cursor = peaks_indices[n] #initialize cursor
+    peak_starts = []  # list to which to add the
+    for n in range(0, len(peaks_indices)):
+        cursor = peaks_indices[n]  # initialize cursor
         if cursor <= look_ahead:
-            #ensure the function can't start out of bounds and if it is check if
-            #there is a smaller value within the look ahead window
-            cursor = signal[0:cursor].argmin() 
+            # ensure the function can't start out of bounds and if it is check if
+            # there is a smaller value within the look ahead window
+            cursor = signal[0:cursor].argmin()
         else:
-            next_cursor = cursor - look_ahead + signal[cursor-look_ahead:cursor].argmin()
-            while signal[cursor] > signal[next_cursor]: 
+            next_cursor = (
+                cursor - look_ahead + signal[cursor - look_ahead : cursor].argmin()
+            )
+            while signal[cursor] > signal[next_cursor]:
                 cursor = next_cursor
-                if cursor <= look_ahead: #check if the function will run out of bounds
-                    if cursor == 0: 
+                if cursor <= look_ahead:  # check if the function will run out of bounds
+                    if cursor == 0:
                         break
                     next_cursor = signal[0:cursor].argmin()
                     if signal[cursor] > signal[next_cursor]:
                         cursor = next_cursor
                     break
-                next_cursor = cursor - look_ahead  + signal[cursor-look_ahead:cursor].argmin() #calculate next minimum
+                next_cursor = (
+                    cursor - look_ahead + signal[cursor - look_ahead : cursor].argmin()
+                )  # calculate next minimum
         peak_starts.append(cursor)
-    
+
     peak_ends = []
 
-    for n in range(0,len(peaks_indices)):
+    for n in range(0, len(peaks_indices)):
         cursor = peaks_indices[n]
         if cursor + look_ahead >= len(signal):
             next_cursor = cursor + 1 + signal[cursor:-1].argmin()
         else:
-            next_cursor = cursor + 1 + signal[cursor:cursor+look_ahead].argmin()
+            next_cursor = cursor + 1 + signal[cursor : cursor + look_ahead].argmin()
             while signal[cursor] > signal[next_cursor]:
                 cursor = next_cursor
-                if cursor+look_ahead >= len(signal): 
-                    if cursor == len(signal)-1:
+                if cursor + look_ahead >= len(signal):
+                    if cursor == len(signal) - 1:
                         break
                     next_cursor = cursor + 1 + signal[cursor:-1].argmin()
                     if signal[cursor] > signal[next_cursor]:
                         cursor = next_cursor
                     break
-                next_cursor = cursor + 1 + signal[cursor:cursor+look_ahead].argmin()
+                next_cursor = cursor + 1 + signal[cursor : cursor + look_ahead].argmin()
         peak_ends.append(cursor)
 
     return peak_starts, peak_ends
@@ -133,7 +137,7 @@ def find_peaks_scipy(
     prominence=0.7,
     wlen=1001,
     look_ahead=12,
-    smooth_window = 7
+    smooth_window=7,
 ):
     """
     Peak finding function that relies on scipy.signal.find_peaks rather than

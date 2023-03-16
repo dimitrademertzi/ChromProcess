@@ -138,7 +138,7 @@ def peak_dict_to_spreadsheet(
     sorted_vals = sorted(series_values)
     peak_grid.append(sorted_vals)
 
-    peak_names = [f' [{x}]' for x in sorted([float(x[2:-1]) for x in peak_dict.keys()])]
+    peak_names = [f" [{x}]" for x in sorted([float(x[2:-1]) for x in peak_dict.keys()])]
     for s in peak_names:
 
         peak_header.append(s)

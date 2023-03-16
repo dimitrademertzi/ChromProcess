@@ -68,7 +68,7 @@ def analysis_from_toml(fname):
         analysis.deconvolve_regions = analysis_dict["Deconvolution_regions"]
 
     if "Plot_region" in analysis_dict:
-        analysis.plot_region= analysis_dict["Plot_region"]
+        analysis.plot_region = analysis_dict["Plot_region"]
 
     if "Prominence" in peak_picking_options:
         analysis.prominence = peak_picking_options["Prominence"]

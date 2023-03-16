@@ -52,7 +52,6 @@ def conditions_from_csv(filename):
             else:
                 c_out[c[0]].append(x)
 
-
     conditions.conditions = c_out
 
     return conditions
@@ -104,13 +103,13 @@ def mineral_conditions_from_csv(filename):
     for c in condset:
         c_out[c[0]] = []
         for x in c[1:]:
-                c_out[c[0]].append(x)
+            c_out[c[0]].append(x)
 
     conditions.conditions = c_out
 
-    #series_name = []
-    #for conditions.mineral_code["series_names"]:
+    # series_name = []
+    # for conditions.mineral_code["series_names"]:
     #    series_name.append(something)
-    #conditions.series_values = series_name
+    # conditions.series_values = series_name
 
     return conditions

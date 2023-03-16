@@ -82,4 +82,3 @@ def data_report_from_csv(file):
         data_report.analysis_details[a[0]] = [x for x in a[1:]]
 
     return data_report
-
