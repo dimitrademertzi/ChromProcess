@@ -8,7 +8,7 @@ from ChromProcess.Loading import analysis_from_toml
 from ChromProcess.Loading import conditions_from_csv, mineral_conditions_from_csv
 from pathlib import Path
 
-experiment_number = "MIN003"
+experiment_number = "MIN004"
 experiment_folder = Path(
     f"{Path.home()}//Macdocs/Master/Internship/Data/{experiment_number}"
 )
@@ -40,7 +40,7 @@ for file in peak_files:
         else:
             peak_tables.append(
                 mineral_peak_collection_from_csv(
-                    f"{peak_collection_directory}/{file}", round_digits=7
+                f"{peak_collection_directory}/{file}", round_digits=7
                 )
             )
 
@@ -54,7 +54,7 @@ IS_pos = 9.33
 # series.reference_integrals_to_IS()
 # 5% of internal standard integral if integrals are normalised to IS
 
-peak_removal_limit = 0.009
+peak_removal_limit = 0.001
 
 series.remove_peaks_below_threshold(peak_removal_limit, metric="height")
 peak_agglomeration_boundary = 0.015  # distance cutoff

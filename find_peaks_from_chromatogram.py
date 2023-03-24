@@ -28,7 +28,7 @@ import numpy as np
 from ChromProcess import Classes
 
 
-experiment_number = "MIN003"
+experiment_number = "MIN004"
 experiment_folder = Path(
     f"{Path.home()}//Macdocs/Master/Internship/Data/{experiment_number}"
 )
@@ -85,7 +85,7 @@ for c in chroms:
 #generate sample names of reliable samples
 sample_names = []
 for chrom in chroms:
-    if len(chrom.mineral) == 3:
+    if len(chrom.mineral) < 7:
         sample_names.append(chrom.mineral)
 
 with open(f"{experiment_folder}/{experiment_number}_sample_names.csv", "w") as file:
@@ -102,7 +102,7 @@ if type(threshold) == float:
 for chrom in chroms:
     plot_figures = False
 
-    if len(chrom.mineral) != 3:
+    if len(chrom.mineral) > 6:
         plot_figures = False
 
     for reg, thres in zip(analysis.regions, threshold):
@@ -135,7 +135,7 @@ for chrom in chroms:
             peaks.append(
                 Classes.Peak(retention_time, start, end, indices=[], height=height)
             )
-            # if reg[0] == 17.58:
+        # if reg[0] == 17.58:
             #    plot_figures = True
         # if reg[0] == 16.31:
         #    plot_figures = True
@@ -176,7 +176,7 @@ for count, reg in enumerate(analysis.deconvolve_regions):
 
     for chrom in chroms:
         deconvolve_this = True
-        if len(chrom.mineral) != 3:
+        if len(chrom.mineral) > 6:
             deconvolve_this = False
 
         if chrom_selection == True:
@@ -184,12 +184,12 @@ for count, reg in enumerate(analysis.deconvolve_regions):
             if (
                 f"{chrom.mineral[0]}"
                 in analysis.deconvolve_regions[reg]["selected_chromatograms"]
-                or f"{chrom.mineral[0]}{chrom.mineral[2]}"
+                or f"{chrom.mineral[0]}{chrom.mineral[-1]}"
                 in analysis.deconvolve_regions[reg]["selected_chromatograms"]
             ):
                 deconvolve_this = True
 
-            if len(chrom.mineral) != 3:
+            if len(chrom.mineral) > 6:
                 deconvolve_this = False
 
         if deconvolve_this:
@@ -253,39 +253,40 @@ colors = []
 #    "Wistia",
 #    "Blues",
 #    "YlGn",
-#    "gray_r",
+#    
 # ]  # "copper_r", "GnBu", "BuPu", , "hls", "Set2", "RdPu", "Purples", ]
 color_palette_list_for_triplicates = [
+    "Wistia",
+    "Blues", 
+    "YlGn", 
+    "gray_r",
     "RdPu", "RdPu", "RdPu",
-    "Wistia", "Wistia", "Wistia",
-    "Blues", "Blues", "Blues",
-    "YlGn", "YlGn",
-    "gray_r", "gray_r", "gray_r",
 ]
+
 for color in color_palette_list_for_triplicates:
-    colors += sns.color_palette(f"{color}", 3).as_hex()
+    colors += sns.color_palette(f"{color}", (3 if color=='RdPu' else 2)).as_hex()#
 colors2 = colors[::-1]
 
-min_list = ["M", "F", "G", "B", "H"]
+exp_list = ["F", 'b']
 # sns.set_style("dark")
 fig, ax = plt.subplots()
 ax.set_prop_cycle(color=[c for c in colors2])
 for c in chroms:
-    if c.mineral[0] in min_list:
+    if c.mineral[0] in exp_list:
         ax.plot(
             c.time[analysis.plot_region[0] : analysis.plot_region[1]],
             c.signal[analysis.plot_region[0] : analysis.plot_region[1]],
             label=c.mineral,
         )
-handles, labels = ax.get_legend_handles_labels()
-ax.legend(
-    handles, labels, ncol=2, fontsize=10, bbox_to_anchor=(1.1, 1.1), loc="upper right"
-)
-# ax.set_xlim(11.17, 11.30)
-# ax.set_ylim(0, 0.3) #A series (-0.05), B series (-0.0025), C series (0)
+    handles, labels = ax.get_legend_handles_labels()
+    ax.legend(
+        handles, labels, ncol=2, fontsize=10, bbox_to_anchor=(1.1, 1.1), loc="upper right"
+    )
+    ##ax.set_xlim(11.17, 11.30)
+    ##ax.set_ylim(0, 0.3) #A series (-0.05), B series (-0.0025), C series (0)
 plt.show()
 
-#removing non-reliable samples that are needed for raw chromatograms and creating PeakCollections files
+##removing non-reliable samples that are needed for raw chromatograms and creating PeakCollections files
 #for c in chroms:
 #    if 'nogoodsample' in c.filename:
 #        chroms.remove(c)
@@ -295,3 +296,4 @@ plt.show()
 #        filename=f"{peak_collection_directory}/{c.filename}",
 #        header_text=f"{conditions.series_unit},{v}\n",
 #    )
+#
