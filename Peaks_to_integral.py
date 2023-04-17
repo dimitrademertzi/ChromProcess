@@ -8,7 +8,7 @@ from ChromProcess.Loading import analysis_from_toml
 from ChromProcess.Loading import conditions_from_csv, mineral_conditions_from_csv
 from pathlib import Path
 
-experiment_number = "MIN004"
+experiment_number = "MIN006"
 experiment_folder = Path(
     f"{Path.home()}//Macdocs/Master/Internship/Data/{experiment_number}"
 )
