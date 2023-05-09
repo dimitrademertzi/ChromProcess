@@ -23,7 +23,8 @@ def analysis_from_toml(fname):
         text = file.read()
 
     analysis_dict = tomli.loads(text)
-
+    if "samples_with_different_IS" in analysis_dict:
+        analysis.samples_with_different_IS = analysis_dict["samples_with_different_IS"]
     analysis.experiment_code = analysis_dict["Dataset"]
 
     method_info = analysis_dict["Method_information"]

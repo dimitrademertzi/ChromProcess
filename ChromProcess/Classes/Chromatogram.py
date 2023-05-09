@@ -57,6 +57,7 @@ class Chromatogram:
         self.point_counts = []
 
         self.internal_standard = Classes.Peak(0.0, 0.0, 0.0)
+        self.samples_with_different_IS = []
 
     def get_mass_spectrum(self, time):
         """

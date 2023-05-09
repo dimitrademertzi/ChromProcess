@@ -28,7 +28,7 @@ import numpy as np
 from ChromProcess import Classes
 
 
-experiment_number = "MIN006"
+experiment_number = "MIN008"
 experiment_folder = Path(
     f"{Path.home()}//Macdocs/Master/Internship/Data/{experiment_number}"
 )
@@ -72,15 +72,19 @@ for f in chromatogram_files:
 # plt.show()
 # plt.close()
 
+
+
 is_start = analysis.internal_standard_region[0]
 is_end = analysis.internal_standard_region[1]
 for c in chroms:
     c.mineral = c.filename.split("_")[1].split(".")[0]
     c.signal = c.signal - min(
-        c.signal[analysis.plot_region[0] : analysis.plot_region[1]]
-    )
+    c.signal[analysis.plot_region[0] : analysis.plot_region[1]])
     internal_standard_integral_look_ahead(c, is_start, is_end)
-    c.signal = c.signal / c.internal_standard.height
+    if f"{c.mineral}" in analysis.samples_with_different_IS:
+        c.signal = c.signal / (c.internal_standard.height * 10.68)
+    else:
+        c.signal = c.signal / c.internal_standard.height
 
 #generate sample names of reliable samples
 sample_names = []
@@ -250,13 +254,18 @@ for count, reg in enumerate(analysis.deconvolve_regions):
 
 colors = []
 color_palette_list = [
-    "YlGn", "YlGn",
-    "RdPu", "RdPu",
+    "gray_r", 
+    "YlGn", "YlGn", "YlGn",
+    "RdPu", "RdPu", "RdPu",
+    "gray_r", "gray_r", 
     "Blues", "Blues", "Blues",
-    "gray_r"
-   
+    "Wistia", "Wistia", "Wistia", 
+    "Purples", "Purples", "Purples", "Purples",
+
 ]  # "copper_r", "GnBu", "BuPu", , "hls", "Set2", "RdPu", "Purples", ]
 color_palette_list_for_everything = [
+
+
     "Blues", "Blues",
     "RdPu", "RdPu",
     "Oranges", "Oranges",
@@ -264,19 +273,19 @@ color_palette_list_for_everything = [
     "Blues", "Blues",
     "YlGn", "YlGn",
     "Purples", "Purples",
-    "gray_r"
+    "gray_r", 
 ]
 
 for color in color_palette_list:
-    colors += sns.color_palette(f"{color}", (3 if color!='gray_r' else 1)).as_hex()#
+    colors += sns.color_palette(f"{color}", (1 if color=='gray_r' else 3)).as_hex()#
 colors2 = colors[::-1]
 
-exp_list = []
+exp_list = ["bl", "Gd"]
 # sns.set_style("dark")
 fig, ax = plt.subplots()
 ax.set_prop_cycle(color=[c for c in colors2])
 for c in chroms:
-    if c.mineral[0:2] not in exp_list:
+    if c.mineral[0:2] in exp_list:
         ax.plot(
             c.time[analysis.plot_region[0] : analysis.plot_region[1]],
             c.signal[analysis.plot_region[0] : analysis.plot_region[1]],
@@ -286,12 +295,12 @@ for c in chroms:
     ax.legend(
         handles, labels, ncol=2, fontsize=10, bbox_to_anchor=(1.1, 1.1), loc="upper right"
     )
-    ##ax.set_xlim(11.17, 11.30)
+    ##ax.set_xli m(11.17, 11.30)
     ##ax.set_ylim(0, 0.3) #A series (-0.05), B series (-0.0025), C series (0)
-plt.show()
+#plt.show()
 
 ###removing non-reliable samples that are needed for raw chromatograms and creating PeakCollections files
-#chroms_to_remove = []
+chroms_to_remove = []
 #for c in chroms:
 #    if '(' in c.filename:
 #        chroms.remove(c)
