@@ -28,7 +28,7 @@ import numpy as np
 from ChromProcess import Classes
 
 
-experiment_number = "MIN008"
+experiment_number = "PIN001"
 experiment_folder = Path(
     f"{Path.home()}//Macdocs/Master/Internship/Data/{experiment_number}"
 )
@@ -64,49 +64,42 @@ for f in chromatogram_files:
 #    chrom.signal -= blank.signal
 
 
-# fig, ax = plt.subplots()
-# for c in chroms:
-#     ax.plot(c.time[analysis.plot_region[0]:analysis.plot_region[1]],
-#            c.signal[analysis.plot_region[0]:analysis.plot_region[1]],
-#            label = c.filename)
-# plt.show()
-# plt.close()
-
-
-
 is_start = analysis.internal_standard_region[0]
 is_end = analysis.internal_standard_region[1]
 for c in chroms:
-    c.mineral = c.filename.split("_")[1].split(".")[0]
+    c.mineral = c.filename.split(".")[1]
     c.signal = c.signal - min(
-    c.signal[analysis.plot_region[0] : analysis.plot_region[1]])
+        c.signal[analysis.plot_region[0] : analysis.plot_region[1]]
+    )
     internal_standard_integral_look_ahead(c, is_start, is_end)
     if f"{c.mineral}" in analysis.samples_with_different_IS:
         c.signal = c.signal / (c.internal_standard.height * 10.68)
     else:
         c.signal = c.signal / c.internal_standard.height
 
-#generate sample names of reliable samples
+
+# generate sample names of reliable samples
 sample_names = []
 for chrom in chroms:
-    if '(' not in chrom.mineral:
+    if "(" not in chrom.mineral:
         sample_names.append(chrom.mineral)
 
 with open(f"{experiment_folder}/{experiment_number}_sample_names.csv", "w") as file:
-        writer = csv.writer(file)
-        writer.writerow(sample_names)
+    writer = csv.writer(file)
+    writer.writerow(sample_names)
 
 threshold = analysis.peak_pick_threshold
 threshold = [threshold for r in analysis.regions]
 peak_figure_folder = Path(experiment_folder, "peak_figures")
+
 if type(threshold) == float:
-    peak_figure_folder.mkdir(exist_ok=True)
+    os.makedirs(peak_figure_folder, exist_ok=True)
 
 
 for chrom in chroms:
     plot_figures = False
 
-    if len(chrom.mineral) > 5:
+    if "(" in chrom.mineral:
         plot_figures = False
 
     for reg, thres in zip(analysis.regions, threshold):
@@ -137,14 +130,17 @@ for chrom in chroms:
                 signal
             )  # subtract the baseline of the region from the peak height
             peaks.append(
-                Classes.Peak(retention_time, start, end, indices=[], height=height)
+                Classes.Peak(
+                    retention_time,
+                    start,
+                    end,
+                    indices=[],
+                    height=height,
+                    pick_type="scipy",
+                )
             )
-        # if reg[0] == 17.58:
-            #    plot_figures = True
-        # if reg[0] == 16.31:
-        #    plot_figures = True
 
-        if plot_figures == True:
+        if plot_figures:
             peak_area(
                 time,
                 signal,
@@ -179,7 +175,7 @@ for count, reg in enumerate(analysis.deconvolve_regions):
         chrom_selection = True
 
     for chrom in chroms:
-        deconvolve_this = True
+        deconvolve_this = False
         if len(chrom.mineral) > 8:
             deconvolve_this = False
 
@@ -188,7 +184,9 @@ for count, reg in enumerate(analysis.deconvolve_regions):
             if (
                 f"{chrom.mineral[0:2]}"
                 in analysis.deconvolve_regions[reg]["selected_chromatograms"]
-                or f"{chrom.mineral[0:2]}{chrom.mineral[-3]}"
+                or f"{chrom.mineral[1]}"
+                in analysis.deconvolve_regions[reg]["selected_chromatograms"]
+                or f"{chrom.mineral[0:2]}{chrom.mineral[-1]}"
                 in analysis.deconvolve_regions[reg]["selected_chromatograms"]
                 or f"{chrom.mineral[0:2]}{chrom.mineral[-1]}"
                 in analysis.deconvolve_regions[reg]["selected_chromatograms"]
@@ -231,6 +229,7 @@ for count, reg in enumerate(analysis.deconvolve_regions):
                 idx = np.where((chrom.time >= peak.start) & (chrom.time <= peak.end))[0]
                 peak.indices = idx
                 insert = np.searchsorted(k, rt)
+                peak.pick_type = "deconvoluted"
                 k.insert(insert, rt)
                 v.insert(insert, peak)
             chrom.peaks = dict(zip(k, v))
@@ -252,60 +251,69 @@ for count, reg in enumerate(analysis.deconvolve_regions):
 #    add_peaks_to_chromatogram(peak_features, chrom)
 #    integrate_chromatogram_peaks(chrom)
 
-colors = []
-color_palette_list = [
-    "gray_r", 
-    "YlGn", "YlGn", "YlGn",
-    "RdPu", "RdPu", "RdPu",
-    "gray_r", "gray_r", 
-    "Blues", "Blues", "Blues",
-    "Wistia", "Wistia", "Wistia", 
-    "Purples", "Purples", "Purples", "Purples",
 
-]  # "copper_r", "GnBu", "BuPu", , "hls", "Set2", "RdPu", "Purples", ]
-color_palette_list_for_everything = [
+color_dict = {
+    "b1": "#212121",
+    "b2": "#616161",
+    "b3": "#9E9E9E",
+    "b4": "#E0E0E0",
+    "g1": "#36802d",
+    "g2": "#77ab59",
+    "g3": "#c9df8a",
+    "g4": "#f0f7da",
+    "h1": "#ff0000",
+    "h2": "#ff5252",
+    "h3": "#ff7b7b",
+    "h4": "#ffbaba",
+    "m1": "#800080",
+    "m2": "#be29ec",
+    "m3": "#d896ff",
+    "m4": "#efbbff",
+    "o1": "#83502e",
+    "o2": "#96613d",
+    "o3": "#bd7e4a",
+    "o4": "#ce8b54",
+}
 
-
-    "Blues", "Blues",
-    "RdPu", "RdPu",
-    "Oranges", "Oranges",
-    "Wistia", "Wistia",
-    "Blues", "Blues",
-    "YlGn", "YlGn",
-    "Purples", "Purples",
-    "gray_r", 
-]
-
-for color in color_palette_list:
-    colors += sns.color_palette(f"{color}", (1 if color=='gray_r' else 3)).as_hex()#
-colors2 = colors[::-1]
-
-exp_list = ["bl", "Gd"]
+exp_list = []
 # sns.set_style("dark")
 fig, ax = plt.subplots()
-ax.set_prop_cycle(color=[c for c in colors2])
 for c in chroms:
-    if c.mineral[0:2] in exp_list:
+    if c.mineral not in exp_list:
         ax.plot(
             c.time[analysis.plot_region[0] : analysis.plot_region[1]],
             c.signal[analysis.plot_region[0] : analysis.plot_region[1]],
+            color=color_dict[f"{c.mineral[0]}{c.mineral[-1]}"],
             label=c.mineral,
+            linestyle="None"
+            if "(" in c.mineral
+            else "dotted"
+            if c.mineral[-3] == "v"
+            else "dashed"
+            if c.mineral[-3] == "i"
+            else "solid",
         )
-    handles, labels = ax.get_legend_handles_labels()
-    ax.legend(
-        handles, labels, ncol=2, fontsize=10, bbox_to_anchor=(1.1, 1.1), loc="upper right"
-    )
-    ##ax.set_xli m(11.17, 11.30)
-    ##ax.set_ylim(0, 0.3) #A series (-0.05), B series (-0.0025), C series (0)
-#plt.show()
 
-###removing non-reliable samples that are needed for raw chromatograms and creating PeakCollections files
-chroms_to_remove = []
-#for c in chroms:
-#    if '(' in c.filename:
-#        chroms.remove(c)
+    handles, labels = ax.get_legend_handles_labels()
+
+to_remove_handles = []
+to_remove_labels = []
+[to_remove_labels.append(label) for label in labels if "(" in label]
+
+[to_remove_handles.append(handle) for handle in handles if handle._linestyle == "None"]
+[labels.remove(label) for label in to_remove_labels]
+[handles.remove(handle) for handle in to_remove_handles]
+ax.legend(
+    handles, labels, ncol=2, fontsize=10, bbox_to_anchor=(1.1, 1.1), loc="upper right"
+)
+plt.show()
+
+##removing non-reliable samples that are needed for raw chromatograms and creating PeakCollections files
+# chroms_to_remove = []
+# [chroms_to_remove.append(chrom) for chrom in chroms if "(" in chrom.filename]
+# [chroms.remove(chrom) for chrom in chroms_to_remove]
 #
-#for c, v in zip(chroms, conditions.series_values):
+# for c, v in zip(chroms, conditions.series_values):
 #    c.write_peak_collection(
 #        filename=f"{peak_collection_directory}/{c.filename}",
 #        header_text=f"{conditions.series_unit},{v}\n",

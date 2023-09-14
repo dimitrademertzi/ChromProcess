@@ -1,3 +1,6 @@
+import csv
+
+
 def parse_text_columns(text, point_delimiter, ordinal_delimiter):
     """
     Converts data organised in columns in a text file and converts it to a list
@@ -62,3 +65,44 @@ def import_file_section(file, start_token, end_token):
                 c_set.append(newline)
 
     return c_set
+
+
+def import_mineral_weights(
+    file, sample_names: str = "Series_values", sample_weights: str = "Mineral_weights"
+) -> dict:
+    """
+    Load a line in a csv file.
+
+    Parameters
+    ----------
+    file: str or pathlib Path
+        Path to the file.
+    samples_names: str
+        String in line with sample names
+    sample_weights: str
+        String in line with sample mineral weights
+
+    Returns
+    -------
+    samples: dict
+        Keys are the sample names and values are the samples' mineral weights
+    """
+
+    samples = dict()
+
+    with open(file, "r", encoding="latin-1") as f:
+        reader = csv.reader(f, delimiter=",")
+        for _, line in enumerate(reader):
+            if sample_names in line:
+                names = list(line)
+            if sample_weights in line:
+                mineral_weights = list(line)
+        names_2 = [x for x in names if len(x) != 0 if x != f"{sample_names}"]
+        mineral_weights_2 = [
+            float(x) for x in mineral_weights if len(x) != 0 if x != f"{sample_weights}"
+        ]
+
+        for k, v in zip(names_2, mineral_weights_2):
+            samples[k] = v
+
+    return samples

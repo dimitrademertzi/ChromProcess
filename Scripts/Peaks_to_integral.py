@@ -8,7 +8,7 @@ from ChromProcess.Loading import analysis_from_toml
 from ChromProcess.Loading import conditions_from_csv, mineral_conditions_from_csv
 from pathlib import Path
 
-experiment_number = "MIN008"
+experiment_number = "PIN001"
 experiment_folder = Path(
     f"{Path.home()}//Macdocs/Master/Internship/Data/{experiment_number}"
 )
@@ -49,7 +49,7 @@ series = Classes.PeakCollectionSeries(
     peak_tables, name=f"{experiment_number}", conditions=conditions.conditions
 )
 
-IS_pos = 9.33
+serIS_pos = 9.285
 
 # series.reference_integrals_to_IS()
 # 5% of internal standard integral if integrals are normalised to IS

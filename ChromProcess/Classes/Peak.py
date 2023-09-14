@@ -19,6 +19,7 @@ class Peak:
         height=None,
         parent="",
         mass_spectrum=False,
+        pick_type:str = "",
     ):
         """
         Creates a Peak object using a retention time
@@ -87,6 +88,8 @@ class Peak:
         self.mass_spectrum = mass_spectrum
 
         self.parent_peak_collection = parent
+
+        self.pick_type = pick_type
 
     def get_integral(self, chromatogram, baseline_subtract=False):
         """
