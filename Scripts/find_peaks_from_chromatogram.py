@@ -28,7 +28,7 @@ import numpy as np
 from ChromProcess import Classes
 
 
-experiment_number = "PIN001"
+experiment_number = "MIN005"
 experiment_folder = Path(
     f"{Path.home()}//Macdocs/Master/Internship/Data/{experiment_number}"
 )
@@ -252,54 +252,48 @@ for count, reg in enumerate(analysis.deconvolve_regions):
 #    integrate_chromatogram_peaks(chrom)
 
 
-color_dict = {
-    "b1": "#212121",
-    "b2": "#616161",
-    "b3": "#9E9E9E",
-    "b4": "#E0E0E0",
-    "g1": "#36802d",
-    "g2": "#77ab59",
-    "g3": "#c9df8a",
-    "g4": "#f0f7da",
-    "h1": "#ff0000",
-    "h2": "#ff5252",
-    "h3": "#ff7b7b",
-    "h4": "#ffbaba",
-    "m1": "#800080",
-    "m2": "#be29ec",
-    "m3": "#d896ff",
-    "m4": "#efbbff",
-    "o1": "#83502e",
-    "o2": "#96613d",
-    "o3": "#bd7e4a",
-    "o4": "#ce8b54",
-}
+colors = []
+colors_list = [
+    "YlGn",
+    "YlGn",
+    "YlGn",
+    "RdPu",
+    "RdPu",
+    "RdPu",
+    "gray_r",
+    "gray_r",
+    "gray_r",
+    "Wistia",
+    "Wistia",
+    "Wistia",
+    "Purples",
+    "Purples",
+    "Purples",
+    "Blues",
+    "Blues",
+    "Blues",
+]
+
+for color in colors_list:
+    colors += sns.color_palette(f"{color}", (3 if color != "gray_r" else 1)).as_hex()  #
+colors2 = colors[::-1]
 
 exp_list = []
-# sns.set_style("dark")
+sns.set_style("dark")
 fig, ax = plt.subplots()
+ax.set_prop_cycle(color=[c for c in colors2])
 for c in chroms:
     if c.mineral not in exp_list:
         ax.plot(
             c.time[analysis.plot_region[0] : analysis.plot_region[1]],
             c.signal[analysis.plot_region[0] : analysis.plot_region[1]],
-            color=color_dict[f"{c.mineral[0]}{c.mineral[-1]}"],
             label=c.mineral,
-            linestyle="None"
-            if "(" in c.mineral
-            else "dotted"
-            if c.mineral[-3] == "v"
-            else "dashed"
-            if c.mineral[-3] == "i"
-            else "solid",
+            linestyle="solid" if "(" not in c.mineral else "None",
         )
-
     handles, labels = ax.get_legend_handles_labels()
-
 to_remove_handles = []
 to_remove_labels = []
 [to_remove_labels.append(label) for label in labels if "(" in label]
-
 [to_remove_handles.append(handle) for handle in handles if handle._linestyle == "None"]
 [labels.remove(label) for label in to_remove_labels]
 [handles.remove(handle) for handle in to_remove_handles]

@@ -40,7 +40,7 @@ for file in peak_files:
         else:
             peak_tables.append(
                 mineral_peak_collection_from_csv(
-                f"{peak_collection_directory}/{file}", round_digits=7
+                    f"{peak_collection_directory}/{file}", round_digits=7
                 )
             )
 
@@ -57,7 +57,7 @@ serIS_pos = 9.285
 peak_removal_limit = 0.001
 
 series.remove_peaks_below_threshold(peak_removal_limit, metric="height")
-peak_agglomeration_boundary = 0.015  # distance cutoff
+peak_agglomeration_boundary = 0.02  # distance cutoff
 # cluster_threshold = 0.008
 
 series.get_peak_clusters(bound=peak_agglomeration_boundary)
